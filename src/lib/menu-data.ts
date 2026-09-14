@@ -122,23 +122,5 @@ export const HOURS = [
   { day: "Sunday", time: "9:00 AM – 10:00 PM" },
 ];
 
-export const REVIEWS = [
-  {
-    name: "Gaurab G.",
-    date: "May 2026",
-    quote:
-      "We tried the jhol momo and it was absolutely delicious. It instantly took me back to my college days. We stayed over two hours while it rained outside and no one ever rushed us.",
-  },
-  {
-    name: "Sharmin A.",
-    date: "May 2026",
-    quote:
-      "On our first day he offered us masala chai on the house, and the next day added a generous portion of rice just to make sure we were happy. Spacious, clean and genuinely welcoming.",
-  },
-  {
-    name: "Puppala V.",
-    date: "May 2026",
-    quote:
-      "Went in during heavy rain and it felt even better to sit down to something warm. The salad and rice dishes were fresh and well done. Ended with gulab jamun, the perfect comforting dessert.",
-  },
-];
+
+

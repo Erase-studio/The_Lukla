@@ -1,14 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { REVIEWS } from "@/lib/menu-data";
+import type { PlaceData } from "@/lib/google-reviews";
 import { IconChevronLeft, IconChevronRight, IconStar } from "./icons";
 import { Reveal } from "./Reveal";
 
-export function Reviews() {
+export function Reviews({ place }: { place: PlaceData }) {
+  const { rating, userRatingCount, reviews } = place;
   const [index, setIndex] = useState(0);
   const go = (step: number) =>
-    setIndex((i) => (i + step + REVIEWS.length) % REVIEWS.length);
+    setIndex((i) => (i + step + reviews.length) % reviews.length);
+
+  // Round rating to one decimal for display; build whole/partial star fill.
+  const displayRating = rating.toFixed(1);
+  const fullStars = Math.floor(rating);
+  const hasHalf = rating - fullStars >= 0.5;
 
   return (
     <section id="reviews" className="py-28 sm:py-40">
@@ -18,21 +24,34 @@ export function Reviews() {
             <p className="eyebrow">Reviews</p>
             <span aria-hidden className="h-px w-8 bg-line" />
             <p className="tnum flex items-center gap-2 text-[15px] text-stone">
-              <span className="flex gap-0.5 text-saffron" aria-hidden>
+              <span
+                className="flex gap-0.5 text-saffron"
+                aria-label={`${displayRating} out of 5 stars`}
+              >
                 {Array.from({ length: 5 }).map((_, i) => (
                   <IconStar
                     key={i}
-                    className={`h-3.5 w-3.5 ${i === 4 ? "opacity-30" : ""}`}
+                    aria-hidden
+                    className={`h-3.5 w-3.5 ${
+                      i < fullStars
+                        ? ""
+                        : i === fullStars && hasHalf
+                          ? "opacity-50"
+                          : "opacity-20"
+                    }`}
                   />
                 ))}
               </span>
-              4.3 from 566 reviews on Google
+              <span aria-hidden>
+                {displayRating} from {userRatingCount.toLocaleString()} reviews
+                on Google
+              </span>
             </p>
           </div>
 
           {/* Every quote shares one grid cell, so the block keeps the height of the longest. */}
           <div className="mt-12 grid">
-            {REVIEWS.map((review, i) => {
+            {reviews.map((review, i) => {
               const active = i === index;
               return (
                 <figure
@@ -45,12 +64,14 @@ export function Reviews() {
                   }`}
                 >
                   <blockquote className="font-display text-[clamp(1.55rem,3.2vw,2.5rem)] leading-[1.3] text-ink">
-                    &ldquo;{review.quote}&rdquo;
+                    &ldquo;{review.text}&rdquo;
                   </blockquote>
                   <figcaption className="mt-8 text-[15px] text-stone">
-                    <span className="font-medium text-ink">{review.name}</span>
+                    <span className="font-medium text-ink">
+                      {review.authorAttribution.displayName}
+                    </span>
                     {" · "}
-                    {review.date}
+                    {review.relativePublishTimeDescription}
                   </figcaption>
                 </figure>
               );
@@ -75,7 +96,7 @@ export function Reviews() {
               <IconChevronRight className="h-5 w-5" />
             </button>
             <p className="tnum ml-3 text-[14px] text-stone" aria-live="polite">
-              {index + 1} of {REVIEWS.length}
+              {index + 1} of {reviews.length}
             </p>
           </div>
         </Reveal>

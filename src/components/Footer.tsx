@@ -1,18 +1,19 @@
 import Image from "next/image";
+import Link from "next/link";
 import { EMAIL, FULL_MENU_URL } from "@/lib/menu-data";
 
 const LINKS = [
-  { label: "Menu", href: "#menu" },
-  { label: "Our story", href: "#story" },
-  { label: "Reviews", href: "#reviews" },
-  { label: "Visit", href: "#visit" },
+  { label: "Menu", href: "/menu" },
+  { label: "About", href: "/about" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export function Footer() {
   return (
     <footer className="mx-auto max-w-[1240px] px-6 pb-10 pt-20 lg:px-10">
       <div className="flex flex-col gap-10 sm:flex-row sm:items-center sm:justify-between">
-        <a href="#top" aria-label="The Lukla, back to top" className="self-start">
+        <Link href="/" aria-label="The Lukla, back to home" className="self-start">
           <Image
             src="/logo-mark.png"
             alt=""
@@ -21,12 +22,16 @@ export function Footer() {
             sizes="64px"
             className="h-16 w-auto"
           />
-        </a>
+        </Link>
         <nav className="flex flex-wrap gap-x-8 gap-y-3 text-[15px] text-stone">
           {LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="transition-colors hover:text-ink">
+            <Link
+              key={l.href}
+              href={l.href}
+              className="transition-colors hover:text-ink"
+            >
               {l.label}
-            </a>
+            </Link>
           ))}
           <a
             href={FULL_MENU_URL}
@@ -34,7 +39,7 @@ export function Footer() {
             rel="noopener noreferrer"
             className="transition-colors hover:text-ink"
           >
-            Full menu
+            Full menu ↗
           </a>
         </nav>
       </div>

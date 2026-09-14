@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   motion,
   useReducedMotion,
@@ -92,7 +93,15 @@ function PlatePhoto({
   );
 }
 
-export function Hero({ plates }: { plates: Plate[] }) {
+export function Hero({
+  plates,
+  rating,
+  userRatingCount,
+}: {
+  plates: Plate[];
+  rating: number;
+  userRatingCount: number;
+}) {
   const section = useRef<HTMLElement>(null);
   const still = Boolean(useReducedMotion());
   const { scrollYProgress } = useScroll({
@@ -183,9 +192,9 @@ export function Hero({ plates }: { plates: Plate[] }) {
               Cooked to order, three minutes from the Falls.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <a href="#menu" className="btn btn-solid">
+              <Link href="/menu" className="btn btn-solid">
                 See the menu
-              </a>
+              </Link>
               <a
                 href={MAPS_URL}
                 target="_blank"
@@ -238,7 +247,9 @@ export function Hero({ plates }: { plates: Plate[] }) {
         <dl className="mt-10 grid grid-cols-1 gap-6 border-b border-line pb-10 text-[16px] sm:grid-cols-3">
           <div>
             <dt className="eyebrow">Google rating</dt>
-            <dd className="tnum mt-2 text-ink">4.3 from 566 reviews</dd>
+            <dd className="tnum mt-2 text-ink">
+              {rating.toFixed(1)} from {userRatingCount.toLocaleString()} reviews
+            </dd>
           </div>
           <div>
             <dt className="eyebrow">Open</dt>

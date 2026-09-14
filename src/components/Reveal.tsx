@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 export function Reveal({
   children,
@@ -11,6 +11,14 @@ export function Reveal({
   className?: string;
   delay?: number;
 }) {
+  const reduce = useReducedMotion();
+
+  // When the user has requested reduced motion, render statically — no fade,
+  // no slide, no whileInView trigger — so nothing ever flickers or moves.
+  if (reduce) {
+    return <div className={className}>{children}</div>;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

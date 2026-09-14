@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   MAPS_URL,
@@ -11,12 +13,13 @@ import {
 } from "@/lib/menu-data";
 import { IconPhone, IconPin } from "./icons";
 
-// Page order, so the underline moves the same way the page scrolls.
+// Industry-standard restaurant order: entry · product · story · visual · find-us
 const NAV_LINKS = [
-  { id: "story", label: "Our story" },
-  { id: "menu", label: "Menu" },
-  { id: "reviews", label: "Reviews" },
-  { id: "visit", label: "Visit" },
+  { href: "/", label: "Home" },
+  { href: "/menu", label: "Menu" },
+  { href: "/about", label: "About" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -37,7 +40,8 @@ function openingStatus() {
     minute: "numeric",
     hourCycle: "h23",
   }).formatToParts(new Date());
-  const part = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  const part = (type: string) =>
+    parts.find((p) => p.type === type)?.value ?? "";
   const day = WEEKDAYS.indexOf(part("weekday"));
   const now = Number(part("hour")) * 60 + Number(part("minute"));
   const [open, close] = OPENING_MINUTES[day];
@@ -49,20 +53,22 @@ function openingStatus() {
     return { open: false, text: `Closed · opens ${formatTime(open)}` };
   }
   const [nextOpen] = OPENING_MINUTES[(day + 1) % 7];
-  return { open: false, text: `Closed · opens ${formatTime(nextOpen)} tomorrow` };
+  return {
+    open: false,
+    text: `Closed · opens ${formatTime(nextOpen)} tomorrow`,
+  };
 }
 
 export function SiteHeader() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [active, setActive] = useState<string | null>(null);
-  const [status, setStatus] = useState<ReturnType<typeof openingStatus> | null>(null);
+  const [status, setStatus] = useState<ReturnType<typeof openingStatus> | null>(
+    null,
+  );
 
   useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 24);
-      if (window.scrollY < 200) setActive(null);
-    };
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -75,21 +81,10 @@ export function SiteHeader() {
     return () => window.clearInterval(timer);
   }, []);
 
+  // Close mobile menu on route change (pathname fires after navigation commits).
   useEffect(() => {
-    const sections = NAV_LINKS.map((l) => document.getElementById(l.id)).filter(
-      (el): el is HTMLElement => el !== null,
-    );
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id);
-        }
-      },
-      { rootMargin: "-45% 0px -50% 0px" },
-    );
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
-  }, []);
+    setOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (!open) return;
@@ -115,7 +110,11 @@ export function SiteHeader() {
             <span
               aria-hidden
               className={`h-2 w-2 rounded-full ${
-                status === null ? "bg-wall" : status.open ? "bg-[#7ad7a0]" : "bg-saffron"
+                status === null
+                  ? "bg-wall"
+                  : status.open
+                    ? "bg-[#7ad7a0]"
+                    : "bg-saffron"
               }`}
             />
             <span className="tnum">{status?.text ?? "Open every day"}</span>
@@ -153,9 +152,10 @@ export function SiteHeader() {
             compact ? "h-[72px]" : "h-[72px] lg:h-[96px]"
           }`}
         >
-          <a
-            href="#top"
-            aria-label="The Lukla, Himalayan and South Indian kitchen. Back to top"
+          {/* Logo — Link navigates to / without a full reload */}
+          <Link
+            href="/"
+            aria-label="The Lukla, Himalayan and South Indian kitchen. Go to home"
             className="flex shrink-0 items-center gap-3 sm:gap-4"
           >
             <Image
@@ -173,7 +173,9 @@ export function SiteHeader() {
             <span className="flex flex-col leading-none">
               <span
                 className={`font-display font-bold tracking-[-0.015em] text-ink transition-[font-size] duration-500 ease-soft ${
-                  compact ? "text-[22px] lg:text-[24px]" : "text-[22px] lg:text-[30px]"
+                  compact
+                    ? "text-[22px] lg:text-[24px]"
+                    : "text-[22px] lg:text-[30px]"
                 }`}
               >
                 The Lukla
@@ -191,25 +193,28 @@ export function SiteHeader() {
                 </span>
               </span>
             </span>
-          </a>
+          </Link>
 
+          {/* Desktop nav */}
           <nav aria-label="Main" className="hidden items-center lg:flex">
             {NAV_LINKS.map((link) => {
-              const isActive = active === link.id;
+              const isActive = pathname === link.href;
               return (
-                <a
-                  key={link.id}
-                  href={`#${link.id}`}
-                  aria-current={isActive ? "location" : undefined}
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={isActive ? "page" : undefined}
                   className={`group/link relative px-4 py-3 text-[14px] font-semibold uppercase tracking-[0.12em] [font-stretch:112%] transition-colors duration-300 xl:px-5 ${
                     isActive ? "text-ink" : "text-ink/60 hover:text-ink"
                   }`}
                 >
                   {link.label}
+                  {/* Hover underline */}
                   <span
                     aria-hidden
                     className="absolute inset-x-4 bottom-1.5 h-[2px] origin-left scale-x-0 rounded-full bg-ink/20 transition-transform duration-500 ease-soft group-hover/link:scale-x-100 xl:inset-x-5"
                   />
+                  {/* Active underline — shared layoutId animates smoothly between nav items */}
                   {isActive && (
                     <motion.span
                       layoutId="nav-underline"
@@ -218,7 +223,7 @@ export function SiteHeader() {
                       transition={{ type: "spring", stiffness: 420, damping: 38 }}
                     />
                   )}
-                </a>
+                </Link>
               );
             })}
           </nav>
@@ -253,6 +258,7 @@ export function SiteHeader() {
           </div>
         </div>
 
+        {/* Mobile nav drawer */}
         <div
           id="mobile-nav"
           inert={!open}
@@ -261,19 +267,21 @@ export function SiteHeader() {
           }`}
         >
           <div className="overflow-hidden">
-            <nav aria-label="Main" className="mx-auto flex max-w-[1320px] flex-col px-5 pb-8">
+            <nav
+              aria-label="Main"
+              className="mx-auto flex max-w-[1320px] flex-col px-5 pb-8"
+            >
               {NAV_LINKS.map((link) => (
-                <a
-                  key={link.id}
-                  href={`#${link.id}`}
-                  onClick={() => setOpen(false)}
+                <Link
+                  key={link.href}
+                  href={link.href}
                   className="flex items-center justify-between border-t border-line py-4 font-display text-3xl text-ink"
                 >
                   {link.label}
-                  {active === link.id && (
+                  {pathname === link.href && (
                     <span aria-hidden className="h-2 w-2 rounded-full bg-cobalt" />
                   )}
-                </a>
+                </Link>
               ))}
               <a
                 href={PHONE_HREF}

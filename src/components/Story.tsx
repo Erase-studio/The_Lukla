@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { images } from "@/lib/images";
 import { Reveal } from "./Reveal";
 
@@ -39,6 +40,13 @@ export function Story() {
               and biryani. Vegan and Jain plates are available on request.
             </p>
           </div>
+
+          <Link
+            href="/about"
+            className="mt-8 inline-flex items-center gap-1.5 text-[15px] font-medium text-cobalt underline decoration-cobalt/30 underline-offset-4 transition-colors hover:decoration-cobalt"
+          >
+            Read our full story →
+          </Link>
 
           <dl className="mt-12 max-w-lg">
             {ELEVATIONS.map((e) => (
