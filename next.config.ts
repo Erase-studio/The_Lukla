@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["192.168.1.67"],
+
   images: {
-    // AVIF first where the browser supports it; WebP otherwise.
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
