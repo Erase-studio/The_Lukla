@@ -6,8 +6,10 @@ import { PageHeader } from "@/components/PageHeader";
 import { Reviews } from "@/components/Reviews";
 import { ScrollTurn } from "@/components/ScrollTurn";
 import { Story } from "@/components/Story";
+import { TwoKitchens } from "@/components/TwoKitchens";
 import { WhatToExpect } from "@/components/WhatToExpect";
 import { IconArrowRight, IconArrowUpRight } from "@/components/icons";
+import { getPlates } from "@/lib/local-photos";
 import { MAPS_URL } from "@/lib/menu-data";
 
 export const metadata: Metadata = {
@@ -17,6 +19,8 @@ export const metadata: Metadata = {
 };
 
 export default function About() {
+  const plates = getPlates();
+
   return (
     <>
       <PageHeader
@@ -26,7 +30,7 @@ export default function About() {
         art={
           <ScrollTurn degrees={20} className="relative aspect-square w-full">
             <Image
-              src="/thali-plate.png"
+              src="/thali-plate.webp"
               alt=""
               fill
               sizes="540px"
@@ -37,6 +41,7 @@ export default function About() {
       />
 
       <Story />
+      <TwoKitchens plates={plates} />
       <WhatToExpect />
       <Reviews />
 
@@ -45,9 +50,9 @@ export default function About() {
         title="Three minutes from the Falls"
         body="Spend the afternoon by the water, then come up the road for momos and a cup of chai."
       >
-        <Link href="/menu" className={darkPrimary}>
-          See the menu
-          <IconArrowRight className="h-4 w-4" />
+        <Link href="/menu" className={`group ${darkPrimary}`}>
+          Explore the menu
+          <IconArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
         </Link>
         <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className={darkSecondary}>
           Get directions

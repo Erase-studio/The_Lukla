@@ -34,10 +34,9 @@ export function Faq() {
     <section aria-labelledby="faq-heading" className="section-y bg-wash">
       <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
         <Reveal className="lg:col-span-4">
-          <p className="eyebrow">FAQ</p>
           <h2
             id="faq-heading"
-            className="mt-5 font-display text-[clamp(2.2rem,4.4vw,3.75rem)] leading-[1.05] text-ink"
+            className="font-display text-[clamp(2.2rem,4.4vw,3.75rem)] leading-[1.05] text-ink"
           >
             Before you visit
           </h2>

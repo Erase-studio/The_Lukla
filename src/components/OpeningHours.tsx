@@ -65,7 +65,7 @@ export function HoursTiles({ tone, className = "" }: { tone: Tone; className?: s
                 <span aria-hidden>{row.short}</span>
               </span>
               {today && (
-                <span className="rounded-full bg-cobalt px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-paper">
+                <span className="rounded-full bg-cobalt px-2 py-0.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-paper">
                   Today
                 </span>
               )}

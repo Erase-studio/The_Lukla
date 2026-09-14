@@ -44,10 +44,9 @@ export function MenuDiscovery({ plates }: { plates: Record<string, Plate> }) {
       <div className="mx-auto max-w-[1240px] px-6 lg:px-10">
         <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="eyebrow">Menu</p>
             <h2
               id="whats-cooking-heading"
-              className="mt-5 font-display text-[clamp(2.2rem,4.4vw,3.75rem)] leading-[1.05] text-ink"
+              className="font-display text-[clamp(2.2rem,4.4vw,3.75rem)] leading-[1.05] text-ink"
             >
               What we cook
             </h2>

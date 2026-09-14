@@ -28,7 +28,7 @@ export function Footer() {
               <span className="font-display text-[24px] font-bold tracking-[-0.015em] text-ink">
                 The Lukla
               </span>
-              <span className="mt-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-cobalt">
+              <span className="mt-1.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-cobalt">
                 Himalayan &amp; South Indian
               </span>
             </span>

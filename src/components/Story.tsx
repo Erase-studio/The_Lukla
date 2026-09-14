@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { images } from "@/lib/images";
-import { BRAND_LINE, CUISINES } from "@/lib/menu-data";
+import { BRAND_LINE } from "@/lib/menu-data";
 import { ElevationProfile } from "./ElevationProfile";
 import { Reveal } from "./Reveal";
 
@@ -23,33 +23,27 @@ export function Story() {
 
         <div className="md:col-span-7 lg:col-span-6 lg:col-start-7">
           <Reveal>
-            <p className="eyebrow">Our story</p>
             <h2
               id="story-heading"
-              className="mt-5 font-display text-[clamp(2.2rem,4.4vw,3.75rem)] leading-[1.05] text-ink"
+              className="font-display text-[clamp(2.3rem,4.6vw,4rem)] leading-[1.03] text-ink"
             >
-              Named after a small town in the mountains
+              Named after Lukla, the gateway to Everest
             </h2>
-            <p className="mt-7 max-w-lg text-[18px] leading-[1.65] text-stone">
-              Lukla is a mountainside town in eastern Nepal, and its airstrip is
-              where most treks to Everest begin. We named our kitchen after it,
-              and cook two cuisines side by side.
-            </p>
+            <div className="mt-7 max-w-lg space-y-5 text-[18px] leading-[1.65] text-stone">
+              <p>
+                Lukla is a small town on a mountainside in the Khumbu region of
+                eastern Nepal. It sits 2,860 metres up, and its airstrip,
+                Tenzing–Hillary Airport, is where most treks to Everest begin.
+              </p>
+              <p>
+                We named our kitchen after it. The momos, thukpa and chowmein
+                come from those mountains; the dosa, idli, sambar and biryani
+                come from South India. Both are cooked to order, side by side,
+                a few minutes from Niagara Falls.
+              </p>
+            </div>
+            <p className="mt-6 text-[15px] text-stone">Vegan and Jain plates on request.</p>
           </Reveal>
-
-          <div className="mt-10 grid max-w-lg grid-cols-2 gap-6 border-t border-line pt-8">
-            {CUISINES.map((cuisine) => (
-              <div key={cuisine.name}>
-                <h3 className="eyebrow text-cobalt">{cuisine.name}</h3>
-                <ul className="mt-4 space-y-1 font-display text-[1.6rem] leading-snug text-ink">
-                  {cuisine.dishes.map((dish) => (
-                    <li key={dish}>{dish}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-          <p className="mt-6 text-[15px] text-stone">Vegan and Jain plates on request.</p>
 
           <ElevationProfile />
 

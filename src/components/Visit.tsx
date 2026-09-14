@@ -19,10 +19,9 @@ export function Visit() {
         <div className="mx-auto max-w-[1160px]">
           <Reveal className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="eyebrow text-paper/65">Visit</p>
               <h2
                 id="visit-heading"
-                className="mt-5 font-display text-[clamp(2.2rem,4.4vw,3.75rem)] leading-[1.05]"
+                className="font-display text-[clamp(2.2rem,4.4vw,3.75rem)] leading-[1.05]"
               >
                 Plan your visit
               </h2>

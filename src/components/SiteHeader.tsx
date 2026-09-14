@@ -113,7 +113,7 @@ export function SiteHeader() {
               >
                 The Lukla
               </span>
-              <span className="mt-1.5 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-cobalt">
+              <span className="mt-1.5 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-cobalt">
                 <span className="font-display text-[13px] font-medium normal-case tracking-normal">
                   लुक्ला
                 </span>
@@ -158,13 +158,30 @@ export function SiteHeader() {
             })}
           </nav>
 
+          {/* Calling is the main action; directions is a quieter second one on wide screens. */}
           <div className="flex items-center gap-2.5">
+            <a
+              href={MAPS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden items-center gap-1.5 px-3 py-3 text-[14px] font-semibold text-ink/75 transition-colors hover:text-ink xl:inline-flex"
+            >
+              Directions
+              <IconArrowUpRight className="h-4 w-4" />
+            </a>
             <a
               href={PHONE_HREF}
               className="btn btn-solid hidden h-12 gap-2.5 px-6 md:inline-flex"
             >
               <IconPhone className="h-4 w-4" />
               Call to order
+            </a>
+            <a
+              href={PHONE_HREF}
+              aria-label={`Call to order, ${PHONE_DISPLAY}`}
+              className="grid h-12 w-12 place-items-center rounded-full bg-ink text-paper md:hidden"
+            >
+              <IconPhone className="h-5 w-5" />
             </a>
             <button
               type="button"

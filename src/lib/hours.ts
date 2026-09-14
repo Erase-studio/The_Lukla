@@ -60,6 +60,9 @@ export function openingStatus(date = new Date()): OpeningStatus {
   const [open, close] = OPENING_MINUTES[today];
 
   if (now >= open && now < close) {
+    const left = close - now;
+    // In the last hour, say how long is left: a reason to go now rather than later.
+    if (left <= 60) return { open: true, today, text: `Open · closes in ${left} min` };
     return { open: true, today, text: `Open now · until ${formatTime(close)}` };
   }
   if (now < open) {

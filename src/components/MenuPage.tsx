@@ -1,14 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MENU_GROUPS, SIGNATURES } from "@/lib/menu-data";
+import { MENU_GROUPS, type MenuTag } from "@/lib/menu-data";
 import type { Plate } from "@/lib/local-photos";
 import { PlateArt } from "./PlateArt";
+import { ScrollSpin } from "./ScrollTurn";
 
-const SECTIONS = [
-  { id: "start-here", label: "Start here" },
-  ...MENU_GROUPS.map((group) => ({ id: group.id, label: group.title })),
-];
+const SECTIONS = MENU_GROUPS.map((group) => ({ id: group.id, label: group.title }));
+
+// Saffron is the site's one warm accent, kept for the house picks.
+export function MenuBadge({ tag }: { tag: MenuTag }) {
+  return tag === "signature" ? (
+    <span className="rounded-full bg-saffron/25 px-2.5 py-0.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-teak">
+      Signature
+    </span>
+  ) : (
+    <span className="rounded-full border border-[#2f6e47]/35 px-2.5 py-0.5 text-[12px] font-semibold uppercase tracking-[0.1em] text-[#2f6e47]">
+      Veg
+    </span>
+  );
+}
 
 export function MenuPage({ plates }: { plates: Record<string, Plate> }) {
   const [active, setActive] = useState(SECTIONS[0].id);
@@ -68,97 +79,78 @@ export function MenuPage({ plates }: { plates: Record<string, Plate> }) {
         </div>
       </nav>
 
-      <section id="start-here" aria-labelledby="start-here-heading" className="section-y scroll-mt-40">
-        <div className="mx-auto max-w-[1240px] px-6 lg:px-10">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="eyebrow">First visit?</p>
-              <h2
-                id="start-here-heading"
-                className="mt-4 font-display text-[clamp(2.2rem,4.4vw,3.75rem)] leading-[1.05] text-ink"
-              >
-                Start here
-              </h2>
-            </div>
-            <p className="max-w-sm text-[16px] leading-[1.6] text-stone">
-              Three dishes that show both sides of the kitchen.
-            </p>
-          </div>
-
-          <ul className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
-            {SIGNATURES.map((dish) => (
-              <li key={dish.name} className="flex gap-5 rounded-[28px] bg-wash p-5 sm:p-6">
-                <PlateArt
-                  plate={plates[dish.plate]}
-                  alt={dish.plateAlt}
-                  fallback={dish.name}
-                  sizes="112px"
-                  className="w-24 shrink-0 self-start sm:w-28"
-                />
-                <div className="min-w-0">
-                  <p className="eyebrow">{dish.kitchen}</p>
-                  <h3 className="mt-1.5 font-display text-[1.5rem] leading-tight text-ink">
-                    {dish.name}
-                  </h3>
-                  <p className="mt-2 text-[15px] leading-[1.55] text-stone">{dish.blurb}</p>
-                  <p className="tnum mt-3 text-[17px] font-medium text-ink">${dish.price}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-x-6 gap-y-2 px-6 pt-8 text-[14px] text-stone lg:px-10">
+        <span className="flex items-center gap-2">
+          <MenuBadge tag="signature" /> House picks
+        </span>
+        <span className="flex items-center gap-2">
+          <MenuBadge tag="veg" /> Vegetarian
+        </span>
+      </div>
 
       {MENU_GROUPS.map((group, i) => (
         <section
           key={group.id}
           id={group.id}
           aria-labelledby={`${group.id}-heading`}
-          className={`section-y scroll-mt-40 ${i % 2 === 0 ? "bg-wash" : ""}`}
+          className="scroll-mt-40"
         >
-          <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
-            <div className="lg:col-span-4">
-              <div className="flex items-center gap-6 lg:sticky lg:top-48 lg:block">
-                <div className="min-w-0 flex-1">
-                  <p className="eyebrow text-cobalt">{group.cuisine}</p>
-                  <h2
-                    id={`${group.id}-heading`}
-                    className="mt-4 font-display text-[clamp(2.4rem,4.4vw,3.75rem)] leading-[1.02] text-ink"
-                  >
-                    {group.title}
-                  </h2>
-                  <p className="mt-3 text-[17px] text-stone">{group.kicker}</p>
-                </div>
-                <PlateArt
-                  plate={plates[group.plate]}
-                  alt={group.plateAlt}
-                  fallback={group.tags.join(" · ")}
-                  sizes="(min-width:1024px) 280px, 128px"
-                  className="w-28 shrink-0 sm:w-36 lg:mt-10 lg:w-[80%] lg:max-w-[280px]"
-                />
-              </div>
-            </div>
-
-            <ul className="border-t border-ink/15 lg:col-span-8">
-              {group.lines.map((line) => (
-                <li
-                  key={line.name}
-                  className="flex items-baseline justify-between gap-6 border-b border-ink/15 py-6"
-                >
-                  <div>
-                    <h3 className="font-display text-[clamp(1.4rem,2.2vw,1.8rem)] leading-tight text-ink">
-                      {line.name}
-                    </h3>
-                    {line.note && (
-                      <p className="mt-1.5 text-[16px] text-stone">{line.note}</p>
-                    )}
+          <div className="mx-auto max-w-[1240px] px-6 lg:px-10">
+            <div
+              className={`grid grid-cols-1 gap-10 py-[clamp(3.5rem,6vw,5.5rem)] lg:grid-cols-12 lg:gap-16 ${
+                i > 0 ? "border-t border-line" : ""
+              }`}
+            >
+              <div className="lg:col-span-4">
+                <div className="flex items-center gap-6 lg:sticky lg:top-48 lg:block">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[14px] font-semibold uppercase tracking-[0.12em] text-cobalt">
+                      {group.cuisine}
+                    </p>
+                    <h2
+                      id={`${group.id}-heading`}
+                      className="mt-3 font-display text-[clamp(2.4rem,4.4vw,3.75rem)] leading-[1.02] text-ink"
+                    >
+                      {group.title}
+                    </h2>
+                    <p className="mt-3 text-[17px] text-stone">{group.kicker}</p>
                   </div>
-                  <p className="tnum shrink-0 font-display text-[clamp(1.3rem,2vw,1.6rem)] text-ink">
-                    ${line.price}
-                  </p>
-                </li>
-              ))}
-            </ul>
+                  <ScrollSpin
+                    degrees={i % 2 === 0 ? 40 : -40}
+                    className="w-32 shrink-0 sm:w-40 lg:mt-10 lg:w-[86%] lg:max-w-[320px]"
+                  >
+                    <PlateArt
+                      plate={plates[group.plate]}
+                      alt={group.plateAlt}
+                      fallback={group.tags.join(" · ")}
+                      sizes="(min-width:1024px) 320px, 160px"
+                    />
+                  </ScrollSpin>
+                </div>
+              </div>
+
+              <ul className="border-t border-ink/15 lg:col-span-8">
+                {group.lines.map((line) => (
+                  <li
+                    key={line.name}
+                    className="flex items-start justify-between gap-6 border-b border-ink/15 py-6"
+                  >
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                        <h3 className="font-display text-[clamp(1.4rem,2.2vw,1.8rem)] leading-tight text-ink">
+                          {line.name}
+                        </h3>
+                        {line.tags?.map((tag) => <MenuBadge key={tag} tag={tag} />)}
+                      </div>
+                      {line.note && <p className="mt-1.5 text-[16px] text-stone">{line.note}</p>}
+                    </div>
+                    <p className="tnum shrink-0 font-display text-[clamp(1.4rem,2.2vw,1.8rem)] leading-tight text-ink">
+                      ${line.price}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </section>
       ))}

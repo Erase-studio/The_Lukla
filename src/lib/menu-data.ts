@@ -14,19 +14,23 @@ export const MAP_EMBED_URL =
 
 export const BRAND_LINE = "From the Himalayas to Niagara.";
 
-// From the restaurant's Google Business listing.
-export const GOOGLE_RATING = 4.3;
-export const GOOGLE_REVIEW_COUNT = 566;
+// From the Google Maps listing, checked September 2026. The one place these numbers live.
+export const GOOGLE_RATING = 4.4;
+export const GOOGLE_REVIEW_COUNT = 779;
 
 export const CUISINES = [
   { name: "Himalayan", dishes: ["Momo", "Thukpa", "Chowmein"] },
   { name: "South Indian", dishes: ["Dosa", "Idli", "Sambar", "Biryani"] },
 ];
 
+// "signature": the house picks shown under "Start with one of these". "veg": vegetarian.
+export type MenuTag = "signature" | "veg";
+
 export type MenuLine = {
   name: string;
   note?: string;
   price: string;
+  tags?: MenuTag[];
 };
 
 export type MenuGroup = {
@@ -35,7 +39,7 @@ export type MenuGroup = {
   cuisine: string;
   kicker: string;
   tags: string[];
-  // File name in /public/plates. Without one, the preview shows the tags instead of a photo.
+  // File name in /public/plates. Without one, the plate shows the tags instead of a photo.
   plate: string;
   plateAlt: string;
   lines: MenuLine[];
@@ -52,9 +56,9 @@ export const MENU_GROUPS: MenuGroup[] = [
     plateAlt: "Momos with tomato achar",
     lines: [
       { name: "Chicken Steam Momo", price: "11.95" },
-      { name: "Chicken Jhol Momo", note: "In warm sesame broth", price: "13.95" },
-      { name: "Veg Steam Momo", price: "10.95" },
-      { name: "Veg Fried Momo", price: "11.95" },
+      { name: "Chicken Jhol Momo", note: "In warm sesame broth", price: "13.95", tags: ["signature"] },
+      { name: "Veg Steam Momo", price: "10.95", tags: ["veg"] },
+      { name: "Veg Fried Momo", price: "11.95", tags: ["veg"] },
     ],
   },
   {
@@ -66,10 +70,15 @@ export const MENU_GROUPS: MenuGroup[] = [
     plate: "dosa",
     plateAlt: "Masala dosa with sambar and coconut chutney",
     lines: [
-      { name: "Masala Dosa", note: "Spiced potato, sambar, chutney", price: "12.95" },
-      { name: "Plain Dosa", price: "9.95" },
-      { name: "Cheese Dosa", price: "13.95" },
-      { name: "Soft Idli", note: "3 pieces", price: "8.95" },
+      {
+        name: "Masala Dosa",
+        note: "Spiced potato, sambar, chutney",
+        price: "12.95",
+        tags: ["signature", "veg"],
+      },
+      { name: "Plain Dosa", price: "9.95", tags: ["veg"] },
+      { name: "Cheese Dosa", price: "13.95", tags: ["veg"] },
+      { name: "Soft Idli", note: "3 pieces", price: "8.95", tags: ["veg"] },
     ],
   },
   {
@@ -79,7 +88,7 @@ export const MENU_GROUPS: MenuGroup[] = [
     kicker: "With rice or garlic naan",
     tags: ["Chicken", "Lamb", "Salmon"],
     plate: "tandoor",
-    plateAlt: "Tandoori chicken",
+    plateAlt: "Tandoori chicken drumsticks on green chutney",
     lines: [
       { name: "Chicken Tandoori", price: "16.95" },
       { name: "Lamb Seekh Kebab", price: "18.95" },
@@ -94,12 +103,29 @@ export const MENU_GROUPS: MenuGroup[] = [
     kicker: "Warm bowls from both kitchens",
     tags: ["Thukpa", "Chowmein", "Sambar"],
     plate: "thukpa",
-    plateAlt: "A bowl of thukpa",
+    plateAlt: "A bowl of noodle soup",
     lines: [
       { name: "Chicken Thukpa", note: "Nepali noodle soup", price: "13.95" },
       { name: "Chicken Chowmein", price: "12.95" },
-      { name: "South Indian Sambar", price: "7.95" },
+      { name: "South Indian Sambar", price: "7.95", tags: ["veg"] },
       { name: "Tomato Garlic Soup", price: "6.95" },
+    ],
+  },
+  {
+    id: "rice-biryani",
+    title: "Rice & Biryani",
+    cuisine: "Slow-cooked",
+    kicker: "More rice dishes on the full menu",
+    tags: ["Goat biryani"],
+    plate: "biryani",
+    plateAlt: "Biryani in a clay bowl",
+    lines: [
+      {
+        name: "Goat Biryani",
+        note: "Basmati, slow-cooked goat, whole spices, saffron",
+        price: "19.95",
+        tags: ["signature"],
+      },
     ],
   },
 ];
@@ -140,7 +166,7 @@ export const SIGNATURES: Signature[] = [
     price: "19.95",
     plate: "biryani",
     plateAlt: "Biryani in a clay bowl",
-    href: "/menu#start-here",
+    href: "/menu#rice-biryani",
   },
 ];
 
