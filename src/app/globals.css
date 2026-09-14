@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+/* Palette taken from the dining room: its periwinkle wall (wall), a deeper cobalt for
+   links and hovers, and navy ink. Teak is the wainscot and chairs; saffron stays for stars. */
+:root {
+  --paper: #f6f8fc;
+  --wash: #e6eefa;
+  --wall: #9dbbe8;
+  --cobalt: #3b5fa6;
+  --ink: #15223d;
+  --stone: #586379;
+  --line: #d8dfeb;
+  --teak: #8f4f27;
+  --saffron: #e2a43b;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-wash: var(--wash);
+  --color-wall: var(--wall);
+  --color-cobalt: var(--cobalt);
+  --color-ink: var(--ink);
+  --color-stone: var(--stone);
+  --color-line: var(--line);
+  --color-teak: var(--teak);
+  --color-saffron: var(--saffron);
+  --font-display: var(--font-eczar);
+  --font-sans: var(--font-anek);
+}
+
+@theme {
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+[id] {
+  scroll-margin-top: 5rem;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-anek), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--cobalt);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@layer components {
+  .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 3rem;
+    padding: 0 1.5rem;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition:
+      background-color 0.45s var(--ease-soft),
+      border-color 0.45s var(--ease-soft),
+      color 0.45s var(--ease-soft);
+  }
+
+  .btn-solid {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .btn-solid:hover {
+    background: var(--cobalt);
+  }
+
+  .btn-line {
+    border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+    color: var(--ink);
+  }
+
+  .btn-line:hover {
+    border-color: var(--ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
