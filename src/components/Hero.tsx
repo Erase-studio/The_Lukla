@@ -7,68 +7,76 @@ import {
   motion,
   useReducedMotion,
   useScroll,
+  useSpring,
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { SKYLINE } from "@/lib/skyline";
-import { MAPS_URL } from "@/lib/menu-data";
-import type { Plate, PlateSlot } from "@/lib/local-photos";
+import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT, MAPS_URL } from "@/lib/menu-data";
+import type { Plate } from "@/lib/local-photos";
+import { useMotionAmplitude } from "@/lib/use-motion-amplitude";
 import { IconArrowUpRight } from "./icons";
+import { SkylightGlow } from "./SkylightGlow";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const HEADLINE = ["Food from", "the Himalayas"];
-const { width: W, height: H } = SKYLINE;
 
-// The dining-room wall, far ridge to near, as opaque tints of the card's blue.
-const TONES = ["#d3e0f5", "#bacdee", "#a1bbe5"];
+type Drift = { rotate: number; x: number; y: number };
 
-// Where each of the restaurant's own plates sits around the headline, cropped by the card edge.
-const SLOTS: Record<
-  PlateSlot,
-  { box: string; turn: [number, number]; alt: string; delay: number }
-> = {
-  momo: {
-    box: "left-[-5%] top-[5%] w-[22%] lg:w-[19%]",
-    turn: [0, -50],
-    alt: "Steamed momos",
-    delay: 0.75,
+// Each plate drifts on its own path and at its own rate, so scrolling reads as depth
+// rather than one dial turning everything. Values are what a plate reaches by the end of the hero.
+const SLOTS: { name: string; box: string; drift: Drift; alt: string; delay: number }[] = [
+  {
+    name: "momo",
+    box: "left-[-3%] top-[7%] w-[17%] lg:w-[14%]",
+    drift: { rotate: -22, x: -26, y: -54 },
+    alt: "Momos with tomato achar",
+    delay: 0.8,
   },
-  dosa: {
-    box: "right-[-6%] top-[2%] w-[24%] lg:w-[21%]",
-    turn: [0, 40],
-    alt: "Masala dosa with sambar and chutney",
-    delay: 0.85,
+  {
+    name: "dosa",
+    box: "right-[-3%] top-[5%] w-[18%] lg:w-[15%]",
+    drift: { rotate: 30, x: 22, y: -34 },
+    alt: "Masala dosa with sambar and coconut chutney",
+    delay: 0.9,
   },
-  biryani: {
-    box: "bottom-[-9%] left-[3%] w-[22%] lg:w-[18%]",
-    turn: [0, 60],
-    alt: "Goat biryani",
-    delay: 0.95,
+  {
+    name: "biryani",
+    box: "bottom-[-7%] left-[4%] w-[19%] lg:w-[16%]",
+    drift: { rotate: 56, x: 20, y: 46 },
+    alt: "Biryani in a clay bowl",
+    delay: 1,
   },
-  chai: {
-    box: "bottom-[7%] right-[5%] w-[14%] lg:w-[11%]",
-    turn: [0, -70],
-    alt: "Masala chai",
-    delay: 1.05,
+  {
+    name: "chai",
+    box: "bottom-[9%] right-[6%] w-[12%] lg:w-[9.5%]",
+    drift: { rotate: -10, x: 6, y: 14 },
+    alt: "A cup of tea on a saucer",
+    delay: 1.1,
   },
-};
+];
 
-function PlatePhoto({
+function useScaled(progress: MotionValue<number>, amplitude: MotionValue<number>, to: number) {
+  return useTransform([progress, amplitude], ([p, a]: number[]) => p * a * to);
+}
+
+function FloatingPlate({
   plate,
+  slot,
   progress,
-  still,
+  amplitude,
 }: {
   plate: Plate;
+  slot: (typeof SLOTS)[number];
   progress: MotionValue<number>;
-  still: boolean;
+  amplitude: MotionValue<number>;
 }) {
-  const slot = SLOTS[plate.slot];
-  const rotate = useTransform(progress, [0, 1], slot.turn);
+  const rotate = useScaled(progress, amplitude, slot.drift.rotate);
+  const x = useScaled(progress, amplitude, slot.drift.x);
+  const y = useScaled(progress, amplitude, slot.drift.y);
 
   return (
     <motion.div
-      style={{ rotate: still ? 0 : rotate }}
-      // From md up: below 768px the corner plates would crowd the eyebrow line.
+      style={{ rotate, x, y }}
       className={`absolute hidden aspect-square md:block ${slot.box}`}
     >
       <motion.div
@@ -81,12 +89,8 @@ function PlatePhoto({
           src={plate.src}
           alt={slot.alt}
           fill
-          sizes="(min-width:1024px) 22vw, 26vw"
-          className={
-            plate.cutout
-              ? "object-contain drop-shadow-[0_24px_30px_rgba(21,34,61,0.25)]"
-              : "rounded-full object-cover shadow-[0_28px_44px_-16px_rgba(21,34,61,0.5)]"
-          }
+          sizes="(min-width:1024px) 16vw, 19vw"
+          className="object-contain drop-shadow-[0_22px_26px_rgba(21,34,61,0.26)]"
         />
       </motion.div>
     </motion.div>
@@ -95,68 +99,58 @@ function PlatePhoto({
 
 export function Hero({
   plates,
-  rating,
-  userRatingCount,
+  rating = GOOGLE_RATING,
+  userRatingCount = GOOGLE_REVIEW_COUNT,
 }: {
-  plates: Plate[];
-  rating: number;
-  userRatingCount: number;
+  plates: Record<string, Plate>;
+  rating?: number;
+  userRatingCount?: number;
 }) {
   const section = useRef<HTMLElement>(null);
   const still = Boolean(useReducedMotion());
+  const amplitude = useMotionAmplitude(still);
   const { scrollYProgress } = useScroll({
     target: section,
     offset: ["start start", "end start"],
   });
-  const thaliTurn = useTransform(scrollYProgress, [0, 1], [0, 120]);
-  const thaliSink = useTransform(scrollYProgress, [0, 1], ["0%", "16%"]);
-  const ridgeDrift = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
+  // A little inertia: layers ease toward the scroll position instead of snapping to it.
+  const progress = useSpring(scrollYProgress, { stiffness: 80, damping: 22, mass: 0.7 });
+
+  // The thali is the anchor, so it barely moves: a slow turn and a slight lift toward the viewer.
+  const thaliRotate = useTransform([progress, amplitude], ([p, a]: number[]) => p * a * 16);
+  const thaliScale = useTransform([progress, amplitude], ([p, a]: number[]) => 1 + p * a * 0.06);
+  const thaliY = useTransform([progress, amplitude], ([p, a]: number[]) => `${p * a * 10}%`);
+  const ridgeY = useTransform([progress, amplitude], ([p, a]: number[]) => `${p * a * 14}%`);
 
   return (
     <section ref={section} id="top" className="px-3 pt-[120px] sm:px-5 lg:pt-[140px]">
-      {/* No fixed height: the card grows to fit the text plus the thali's own space, so the plate never covers the buttons. */}
       <div className="relative isolate mx-auto flex max-w-[1480px] flex-col overflow-hidden rounded-[36px] bg-wash">
-        {/* Light through the skylights, as it falls on the dining-room wall. */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -top-[30%] right-[14%] h-[110%] w-[16%] rotate-[30deg] bg-gradient-to-b from-white/75 via-white/25 to-transparent blur-2xl" />
-          <div className="absolute -top-[30%] right-[34%] h-[100%] w-[7%] rotate-[30deg] bg-gradient-to-b from-white/60 via-white/15 to-transparent blur-xl" />
-        </div>
+        <SkylightGlow />
 
+        {/* A 3D render of the real Khumbu terrain from above Tengboche (AWS Terrain Tiles elevation data):
+            Nuptse, Everest and Lhotse left of centre, Ama Dablam to the right. The sky is transparent. */}
         <motion.div
-          style={{ y: still ? 0 : ridgeDrift }}
-          className="absolute inset-x-0 bottom-0 -z-10 h-[44%]"
+          style={{ y: ridgeY }}
+          className="pointer-events-none absolute bottom-0 left-1/2 -z-10 hidden w-[140%] -translate-x-1/2 md:block lg:w-full"
         >
-          <svg
-            viewBox={`0 0 ${W} ${H}`}
-            preserveAspectRatio="none"
-            className="h-full w-full"
-            aria-hidden
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.8, delay: 0.15, ease: EASE }}
           >
-            {SKYLINE.layers.map((d, i) => (
-              <motion.path
-                key={i}
-                d={d}
-                fill={TONES[i]}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1.4, delay: 0.2 + i * 0.15, ease: EASE }}
-              />
-            ))}
-            <motion.path
-              d={SKYLINE.ridge}
-              fill="none"
-              stroke="var(--cobalt)"
-              strokeOpacity={0.35}
-              strokeWidth={1.2}
-              vectorEffect="non-scaling-stroke"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 2.6, delay: 0.3, ease: EASE }}
+            <Image
+              src="/himalaya-range.webp"
+              alt=""
+              width={2400}
+              height={588}
+              loading="eager"
+              sizes="(min-width:1024px) 1480px, 140vw"
+              className="h-auto w-full"
             />
-          </svg>
+          </motion.div>
         </motion.div>
 
-        <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6 pt-12 text-center sm:pt-16 lg:pt-[5svh]">
+        <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center px-5 pt-10 text-center sm:px-6 sm:pt-16 lg:pt-[5svh]">
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -166,7 +160,7 @@ export function Hero({
             Himalayan &amp; South Indian kitchen · Niagara Falls, NY
           </motion.p>
 
-          <h1 className="mt-5 font-display text-[clamp(3rem,min(8.4vw,11.5svh),6.75rem)] leading-[0.94] tracking-[-0.025em] text-ink">
+          <h1 className="mt-5 font-display text-[clamp(2.9rem,min(8.4vw,11.5svh),6.75rem)] leading-[0.94] tracking-[-0.025em] text-ink">
             {HEADLINE.map((line, i) => (
               <span key={line} className="block overflow-hidden pb-[0.08em]">
                 <motion.span
@@ -181,25 +175,66 @@ export function Hero({
             ))}
           </h1>
 
+          {/* Phones get their own composition: the plate right under the headline, set on the ridge. */}
+          <div className="relative mt-3 aspect-[5/4] w-full max-w-[380px] md:hidden">
+            <div className="pointer-events-none absolute bottom-[6%] left-1/2 w-[250%] -translate-x-1/2 [mask-image:linear-gradient(to_bottom,#000_60%,transparent)]">
+              <Image
+                src="/himalaya-range.webp"
+                alt=""
+                width={2400}
+                height={588}
+                loading="eager"
+                sizes="250vw"
+                className="h-auto w-full"
+              />
+            </div>
+            <motion.div
+              style={{ rotate: thaliRotate, scale: thaliScale }}
+              className="absolute left-1/2 top-[4%] aspect-square w-[72%] -translate-x-1/2"
+            >
+              <motion.div
+                initial={{ opacity: 0, y: "20%", rotate: -40 }}
+                animate={{ opacity: 1, y: 0, rotate: 0 }}
+                transition={{ duration: 1.6, delay: 0.3, ease: EASE }}
+                className="relative h-full w-full"
+              >
+                <Image
+                  src="/thali-plate.png"
+                  alt="A thali with rice, dal, curries and raita"
+                  fill
+                  loading="eager"
+                  sizes="72vw"
+                  className="object-contain drop-shadow-[0_24px_30px_rgba(21,34,61,0.3)]"
+                />
+              </motion.div>
+            </motion.div>
+          </div>
+
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.45, ease: EASE }}
-            className="flex flex-col items-center"
+            className="flex w-full flex-col items-center"
           >
-            <p className="mt-5 max-w-md text-[18px] leading-[1.55] text-stone">
-              Momos and thukpa from Nepal, dosa and biryani from South India.
-              Cooked to order, three minutes from the Falls.
+            <p className="mt-5 hidden max-w-md text-[18px] leading-[1.55] text-stone md:block">
+              Momos, thukpa, dosa and biryani, made to order three minutes from
+              Niagara Falls.
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link href="/menu" className="btn btn-solid">
+            <p className="text-[15px] font-semibold uppercase tracking-[0.14em] text-ink md:hidden">
+              Momo · Thukpa · Dosa · Biryani
+            </p>
+            <p className="mt-2 text-[16px] text-stone md:hidden">
+              Made to order, three minutes from the Falls.
+            </p>
+            <div className="mt-7 flex w-full max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center md:mt-8">
+              <Link href="/menu" className="btn btn-solid justify-center">
                 See the menu
               </Link>
               <a
                 href={MAPS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-line bg-paper/50"
+                className="btn btn-line justify-center bg-paper/50"
               >
                 Get directions
                 <IconArrowUpRight className="h-4 w-4" />
@@ -208,21 +243,25 @@ export function Hero({
           </motion.div>
         </div>
 
-        {plates.map((plate) => (
-          <PlatePhoto
-            key={plate.slot}
-            plate={plate}
-            progress={scrollYProgress}
-            still={still}
-          />
-        ))}
+        {SLOTS.map((slot) => {
+          const plate = plates[slot.name];
+          return plate ? (
+            <FloatingPlate
+              key={slot.name}
+              plate={plate}
+              slot={slot}
+              progress={progress}
+              amplitude={amplitude}
+            />
+          ) : null;
+        })}
 
-        {/* The thali's own strip below the buttons. It rises from the bottom edge like the sun over the ridge,
-            and its height follows the screen height so the plate still shows on short laptop screens. */}
-        <div className="relative mt-8 h-[clamp(190px,27svh,330px)] shrink-0">
+        {/* Tablet and desktop: the thali rises from the bottom edge like the sun over the ridge.
+            Its strip grows with screen height so the plate still shows on short laptop screens. */}
+        <div className="relative mt-8 hidden h-[clamp(190px,27svh,330px)] shrink-0 md:block">
           <motion.div
-            style={{ rotate: still ? 0 : thaliTurn, y: still ? 0 : thaliSink }}
-            className="absolute left-1/2 top-0 aspect-square h-[150%] -translate-x-1/2 sm:h-[175%]"
+            style={{ rotate: thaliRotate, scale: thaliScale, y: thaliY }}
+            className="absolute left-1/2 top-0 aspect-square h-[175%] -translate-x-1/2"
           >
             <motion.div
               initial={{ opacity: 0, y: "30%", rotate: -40 }}
@@ -235,16 +274,17 @@ export function Hero({
                 alt="A thali with rice, dal, curries and raita"
                 fill
                 preload
-                sizes="(min-width:1024px) 580px, 90vw"
+                sizes="(min-width:1024px) 580px, 50vw"
                 className="object-contain drop-shadow-[0_30px_40px_rgba(21,34,61,0.3)]"
               />
             </motion.div>
           </motion.div>
         </div>
+        <div aria-hidden className="h-8 md:hidden" />
       </div>
 
       <div className="mx-auto max-w-[1240px] px-3 sm:px-5 lg:px-10">
-        <dl className="mt-10 grid grid-cols-1 gap-6 border-b border-line pb-10 text-[16px] sm:grid-cols-3">
+        <dl className="mt-8 grid grid-cols-1 gap-6 border-b border-line pb-10 text-[16px] sm:grid-cols-3">
           <div>
             <dt className="eyebrow">Google rating</dt>
             <dd className="tnum mt-2 text-ink">

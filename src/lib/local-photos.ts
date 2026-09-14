@@ -1,39 +1,51 @@
 import fs from "node:fs";
 import path from "node:path";
 
-// Photos the restaurant drops into /public are picked up by file name, so the site
-// shows real food and the real dining room as soon as the files exist.
+// Round, transparent plate cut-outs live in /public/plates, one file per dish (momo.png, dosa.png...).
+// Components ask for a plate by name, so a new photo appears as soon as its file is added.
 
-const PUBLIC_DIR = path.join(process.cwd(), "public");
-const IMAGE_EXT = /\.(png|webp|avif|jpe?g)$/i;
-const CUTOUT_EXT = /\.(png|webp|avif)$/i;
+const PLATES_DIR = path.join(process.cwd(), "public", "plates");
+const IMAGE_EXT = /\.(png|webp|avif)$/i;
 
-export const PLATE_SLOTS = ["momo", "dosa", "biryani", "chai"] as const;
-export type PlateSlot = (typeof PLATE_SLOTS)[number];
+export type Plate = { name: string; src: string };
 
-export type Plate = {
-  slot: PlateSlot;
-  src: string;
-  // Transparent PNG/WebP cutouts sit on the page as-is; JPGs are cropped into a round plate.
-  cutout: boolean;
-};
+export type GalleryPhoto = { src: string; caption: string };
 
-function listDir(dir: string): string[] {
+const GALLERY_DIR = path.join(process.cwd(), "public", "gallery");
+const PHOTO_EXT = /\.(png|webp|avif|jpe?g)$/i;
+
+// "02-dining-room.jpg" becomes "Dining room". A leading number only sets the order.
+function captionFrom(file: string) {
+  const words = path.parse(file).name.replace(/^\d+[-_ ]*/, "").replace(/[-_]+/g, " ").trim();
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+// Restaurant photos dropped into /public/gallery appear on the gallery page, sorted by file name.
+export function getGalleryPhotos(): GalleryPhoto[] {
   try {
-    return fs.readdirSync(dir);
+    return fs
+      .readdirSync(GALLERY_DIR)
+      .filter((file) => PHOTO_EXT.test(file))
+      .sort()
+      .map((file) => ({ src: `/gallery/${file}`, caption: captionFrom(file) }));
   } catch {
     return [];
   }
 }
 
-export function getHeroPlates(): Plate[] {
-  const files = listDir(path.join(PUBLIC_DIR, "hero"));
-  return PLATE_SLOTS.flatMap((slot) => {
-    const file = files.find(
-      (f) => IMAGE_EXT.test(f) && path.parse(f).name.toLowerCase() === slot,
-    );
-    return file
-      ? [{ slot, src: `/hero/${file}`, cutout: CUTOUT_EXT.test(file) }]
-      : [];
-  });
+export function getPlates(): Record<string, Plate> {
+  let files: string[];
+  try {
+    files = fs.readdirSync(PLATES_DIR);
+  } catch {
+    return {};
+  }
+  return Object.fromEntries(
+    files
+      .filter((file) => IMAGE_EXT.test(file))
+      .map((file) => {
+        const name = path.parse(file).name.toLowerCase();
+        return [name, { name, src: `/plates/${file}` }];
+      }),
+  );
 }

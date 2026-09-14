@@ -36,8 +36,16 @@ html {
   scroll-behavior: smooth;
 }
 
-[id] {
-  scroll-margin-top: 5rem;
+/* In the base layer so a section's own scroll-mt-* utility can override it. */
+@layer base {
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+}
+
+/* The gallery viewer is a modal <dialog>; the page behind it shouldn't scroll. */
+html:has(dialog[open]) {
+  overflow: hidden;
 }
 
 body {
@@ -59,13 +67,41 @@ body {
   border-radius: 6px;
 }
 
+/* The skip link moves focus to <main>; the landmark itself doesn't need a ring. */
+[tabindex="-1"]:focus {
+  outline: none;
+}
+
 @layer components {
   .eyebrow {
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.18em;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--stone);
+  }
+
+  /* One vertical rhythm for every full-width section. */
+  .section-y {
+    padding-block: clamp(4.5rem, 8vw, 7rem);
+  }
+
+  .skip-link {
+    position: fixed;
+    left: 1rem;
+    top: 1rem;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: 500;
+    translate: 0 -200%;
+    transition: translate 0.3s var(--ease-soft);
+  }
+
+  .skip-link:focus-visible {
+    translate: 0 0;
   }
 
   .tnum {

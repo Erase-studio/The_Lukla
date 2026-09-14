@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Anek_Latin, Eczar } from "next/font/google";
-import "./globals.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
+import { MobileActionBar } from "@/components/MobileActionBar";
 import { MotionProvider } from "@/components/MotionProvider";
+import "./globals.css";
 import { PageTransition } from "@/components/PageTransition";
 
 // Eczar (Rosetta) was drawn for Devanagari and Latin together, so "लुक्ला" and "Lukla" share one voice.
@@ -20,7 +21,11 @@ const anek = Anek_Latin({
 });
 
 export const metadata: Metadata = {
-  title: "The Lukla · Himalayan & South Indian Kitchen in Niagara Falls, NY",
+  title: {
+    default:
+      "The Lukla · Himalayan & South Indian Kitchen in Niagara Falls, NY",
+    template: "%s · The Lukla, Niagara Falls",
+  },
   description:
     "Momos, thukpa, dosa and biryani, cooked to order three minutes from Niagara Falls State Park. Open every day.",
   openGraph: {
@@ -48,16 +53,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${eczar.variable} ${anek.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-paper text-ink">
-        {/*
-          MotionProvider sits at the root so every page and component inherits
-          the reducedMotion="user" config without each needing to import it.
-          SiteHeader and Footer are rendered once here and persist across all
-          client navigations — they never unmount, so no flash or re-mount cost.
-        */}
         <MotionProvider>
+          <a href="#main" className="skip-link">
+            Skip to content
+          </a>
           <SiteHeader />
-          <PageTransition>{children}</PageTransition>
+          <main id="main" tabIndex={-1}>
+            <PageTransition>{children}</PageTransition>
+          </main>
           <Footer />
+          <MobileActionBar />
         </MotionProvider>
       </body>
     </html>

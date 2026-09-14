@@ -1,122 +1,107 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ClosingCta, darkPrimary, darkSecondary } from "@/components/ClosingCta";
+import { GalleryGrid, type GalleryItem } from "@/components/GalleryGrid";
+import { PageHeader } from "@/components/PageHeader";
+import { IconArrowRight } from "@/components/icons";
 import { images } from "@/lib/images";
-import { Reveal } from "@/components/Reveal";
-import { getHeroPlates } from "@/lib/local-photos";
+import { getGalleryPhotos, getPlates } from "@/lib/local-photos";
 
-export const metadata = {
-  title: "Gallery · The Lukla",
-  description:
-    "Photos of the food, the dining room, and the views at The Lukla Himalayan & South Indian Kitchen, Niagara Falls, NY.",
+export const metadata: Metadata = {
+  title: "Gallery",
+  description: "Plates from The Lukla's Himalayan and South Indian kitchen in Niagara Falls, NY.",
 };
 
-// Gallery mixes local real photos with curated Unsplash images so it always
-// has content even before the restaurant uploads their own shots.
-async function getGalleryPhotos() {
-  const plates = await Promise.resolve(getHeroPlates());
+export default function Gallery() {
+  const plates = getPlates();
 
-  // Local photos from /public
-  const local: { src: string; alt: string; aspect: string }[] = [
-    {
-      src: "/dining-room.jpg",
-      alt: "The dining room — warm periwinkle walls, wooden chairs, soft lighting",
-      aspect: "aspect-[4/3]",
-    },
+  // Laid out on a 6-column grid (2 on phones); spans are chosen so the tiles lock together.
+  const curated: (GalleryItem | false | undefined)[] = [
     {
       src: "/thali-plate.png",
       alt: "A thali with rice, dal, curries and raita",
-      aspect: "aspect-square",
+      caption: "Thali",
+      kind: "plate",
+      span: "col-span-2 row-span-2 md:col-span-3",
     },
-  ];
-
-  // Plate photos the restaurant has dropped in
-  for (const plate of plates) {
-    local.push({
-      src: plate.src,
-      alt: plate.slot.charAt(0).toUpperCase() + plate.slot.slice(1),
-      aspect: "aspect-square",
-    });
-  }
-
-  // Supplementary Unsplash photos
-  const stock: { src: string; alt: string; aspect: string }[] = [
-    {
-      src: images.dosa,
-      alt: "Masala dosa with sambar and chutney",
-      aspect: "aspect-[3/4]",
+    plates.momo && {
+      src: plates.momo.src,
+      alt: "Momos with tomato achar",
+      caption: "Momo",
+      kind: "plate",
+      span: "md:col-span-2",
     },
-    {
-      src: images.biryani,
-      alt: "Goat biryani with saffron rice",
-      aspect: "aspect-[3/4]",
-    },
-    {
-      src: images.momo,
-      alt: "Steamed chicken momos",
-      aspect: "aspect-[3/4]",
-    },
-    {
-      src: images.spices,
-      alt: "Whole spices — the foundation of both cuisines",
-      aspect: "aspect-[3/4]",
+    plates.chai && {
+      src: plates.chai.src,
+      alt: "A cup of tea on a saucer",
+      caption: "Tea",
+      kind: "plate",
+      span: "",
     },
     {
       src: images.falls,
-      alt: "Niagara Falls — three minutes from the restaurant",
-      aspect: "aspect-[16/9]",
+      alt: "The Maid of the Mist boat in the spray below Horseshoe Falls",
+      caption: "Niagara Falls, three minutes away",
+      kind: "photo",
+      span: "col-span-2 md:col-span-3",
+    },
+    {
+      src: images.spices,
+      alt: "Whole spices: cinnamon, cardamom, peppercorns, cumin and dried chillies",
+      caption: "Whole spices",
+      kind: "photo",
+      span: "row-span-2 md:col-span-2",
+    },
+    plates.dosa && {
+      src: plates.dosa.src,
+      alt: "Masala dosa with sambar and coconut chutney",
+      caption: "Masala dosa",
+      kind: "plate",
+      span: "md:col-span-2 md:row-span-2",
+    },
+    plates.biryani && {
+      src: plates.biryani.src,
+      alt: "Biryani in a clay bowl",
+      caption: "Biryani",
+      kind: "plate",
+      span: "md:col-span-2 md:row-span-2",
     },
   ];
 
-  return [...local, ...stock];
-}
+  // Photos the restaurant adds to /public/gallery lead the page.
+  const uploaded: GalleryItem[] = getGalleryPhotos().map((photo) => ({
+    src: photo.src,
+    alt: photo.caption,
+    caption: photo.caption,
+    kind: "photo",
+    span: "col-span-2 md:col-span-3 md:row-span-2",
+  }));
 
-export default async function GalleryPage() {
-  const photos = await getGalleryPhotos();
+  const items = [...uploaded, ...curated.filter((item): item is GalleryItem => Boolean(item))];
 
   return (
-    <main className="pt-[120px] lg:pt-[140px]">
-      <section className="py-20 sm:py-28">
-        <div className="mx-auto max-w-[1240px] px-6 lg:px-10">
-          <Reveal>
-            <p className="eyebrow">Gallery</p>
-            <h1 className="mt-5 font-display text-[clamp(2.8rem,6vw,5rem)] leading-[1.02] tracking-[-0.02em] text-ink">
-              The food, the room, the view
-            </h1>
-          </Reveal>
+    <>
+      <PageHeader
+        eyebrow="Gallery"
+        title="From our kitchen"
+        intro="Plates from both sides of the kitchen, and the view just down the road. Tap any photo to see it larger."
+      />
 
-          {/* Responsive masonry-style grid using CSS columns */}
-          <div className="mt-16 columns-1 gap-4 sm:columns-2 lg:columns-3 lg:gap-6">
-            {photos.map((photo, i) => (
-              <Reveal key={photo.src + i} delay={(i % 3) * 0.08}>
-                <div
-                  className={`relative mb-4 overflow-hidden rounded-[18px] bg-wash lg:mb-6 ${photo.aspect}`}
-                >
-                  <Image
-                    src={photo.src}
-                    alt={photo.alt}
-                    fill
-                    sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-[1200ms] ease-soft hover:scale-[1.04]"
-                  />
-                </div>
-              </Reveal>
-            ))}
-          </div>
+      <GalleryGrid items={items} />
 
-          <Reveal className="mt-10 text-[15px] text-stone">
-            <p>
-              Real photos of our dining room and food are added as we go. If you
-              have visited us and would like to share a photo, send it to{" "}
-              <a
-                href="mailto:info@thelukla.com"
-                className="text-cobalt underline decoration-cobalt/30 underline-offset-4 transition-colors hover:decoration-cobalt"
-              >
-                info@thelukla.com
-              </a>
-              .
-            </p>
-          </Reveal>
-        </div>
-      </section>
-    </main>
+      <ClosingCta
+        eyebrow="Hungry yet?"
+        title="Taste it in person"
+        body="Everything here is on the menu, cooked to order every day from breakfast to late dinner."
+      >
+        <Link href="/menu" className={darkPrimary}>
+          See the menu
+          <IconArrowRight className="h-4 w-4" />
+        </Link>
+        <Link href="/contact" className={darkSecondary}>
+          Plan your visit
+        </Link>
+      </ClosingCta>
+    </>
   );
 }

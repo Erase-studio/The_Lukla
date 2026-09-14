@@ -1,42 +1,146 @@
+import type { Metadata } from "next";
+import Image from "next/image";
+import { Faq } from "@/components/Faq";
+import { HoursTiles, OpenStatus } from "@/components/OpeningHours";
+import { PageHeader } from "@/components/PageHeader";
+import { ScrollTurn } from "@/components/ScrollTurn";
 import {
+  IconArrowUpRight,
+  IconMail,
+  IconPhone,
+  IconPin,
+  IconWhatsapp,
+} from "@/components/icons";
+import { getPlates } from "@/lib/local-photos";
+import {
+  ADDRESS,
   EMAIL,
-  HOURS,
+  MAP_EMBED_URL,
   MAPS_URL,
   PHONE_DISPLAY,
   PHONE_HREF,
   WHATSAPP_URL,
 } from "@/lib/menu-data";
-import { IconArrowUpRight } from "@/components/icons";
-import { Reveal } from "@/components/Reveal";
 
-export const metadata = {
-  title: "Contact · The Lukla",
+export const metadata: Metadata = {
+  title: "Contact",
   description:
-    "Visit The Lukla Himalayan & South Indian Kitchen at 1 Prospect Pointe, Niagara Falls, NY. Open every day for dine-in, takeout and pickup.",
+    "Find The Lukla at 1 Prospect Pointe, Niagara Falls, NY. Hours, phone, WhatsApp, directions and parking.",
 };
 
-export default function ContactPage() {
-  return (
-    <main className="pt-[120px] lg:pt-[140px]">
-      {/* Hero */}
-      <section className="py-20 sm:py-28">
-        <div className="mx-auto max-w-[1240px] px-6 lg:px-10">
-          <Reveal>
-            <p className="eyebrow">Contact</p>
-            <h1 className="mt-5 font-display text-[clamp(2.8rem,6vw,5rem)] leading-[1.02] tracking-[-0.02em] text-ink">
-              Plan your visit
-            </h1>
-            <p className="mt-6 max-w-xl text-[18px] leading-[1.65] text-stone">
-              We&apos;re inside Comfort Inn The Pointe, with parking on site.
-              Walk in, call ahead for a table, or order for pickup.
-            </p>
-          </Reveal>
+const METHODS = [
+  {
+    label: "Call",
+    value: PHONE_DISPLAY,
+    note: "Tables, takeout and curbside pickup",
+    href: PHONE_HREF,
+    icon: IconPhone,
+    external: false,
+  },
+  {
+    label: "WhatsApp",
+    value: "Message us",
+    note: PHONE_DISPLAY,
+    href: WHATSAPP_URL,
+    icon: IconWhatsapp,
+    external: true,
+  },
+  {
+    label: "Email",
+    value: EMAIL,
+    note: null,
+    href: `mailto:${EMAIL}`,
+    icon: IconMail,
+    external: false,
+  },
+  {
+    label: "Address",
+    value: ADDRESS[0],
+    note: `${ADDRESS[1]} · Inside Comfort Inn The Pointe`,
+    href: MAPS_URL,
+    icon: IconPin,
+    external: true,
+  },
+];
 
-          <div className="mt-16 grid grid-cols-1 gap-16 lg:grid-cols-12">
-            {/* Left column */}
-            <Reveal className="lg:col-span-6">
-              {/* Action buttons */}
-              <div className="flex flex-wrap gap-3">
+export default function Contact() {
+  const plates = getPlates();
+
+  return (
+    <>
+      <PageHeader
+        eyebrow="Contact"
+        title="Come find us"
+        intro="We're inside Comfort Inn The Pointe, three minutes from Niagara Falls State Park. Call ahead, send a message, or walk in."
+        art={
+          plates.chai && (
+            <ScrollTurn degrees={-30} className="relative ml-auto aspect-square w-[78%]">
+              <Image
+                src={plates.chai.src}
+                alt=""
+                fill
+                sizes="420px"
+                className="object-contain drop-shadow-[0_26px_32px_rgba(21,34,61,0.3)]"
+              />
+            </ScrollTurn>
+          )
+        }
+      >
+        <OpenStatus tone="light" className="mt-8" />
+      </PageHeader>
+
+      <section aria-label="Ways to reach us" className="section-y">
+        <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-12 px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
+          <div className="lg:col-span-5">
+            <ul className="border-t border-line">
+              {METHODS.map((method) => (
+                <li key={method.label} className="border-b border-line">
+                  <a
+                    href={method.href}
+                    {...(method.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    className="group flex items-center gap-5 py-6"
+                  >
+                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-wash text-cobalt transition-colors duration-300 group-hover:bg-ink group-hover:text-paper">
+                      <method.icon className="h-5 w-5" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="eyebrow block">{method.label}</span>
+                      <span className="tnum mt-1.5 block break-words font-display text-[clamp(1.35rem,2.2vw,1.7rem)] leading-tight text-ink">
+                        {method.value}
+                      </span>
+                      {method.note && (
+                        <span className="tnum mt-1 block text-[15px] text-stone">{method.note}</span>
+                      )}
+                    </span>
+                    <IconArrowUpRight className="h-5 w-5 shrink-0 text-ink/35 transition duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-12">
+              <h2 className="eyebrow">Opening hours</h2>
+              <HoursTiles tone="light" className="mt-5 grid-cols-2" />
+              <p className="mt-5 text-[15px] leading-[1.6] text-stone">
+                Dine-in, takeout, curbside pickup and outdoor seating.
+              </p>
+            </div>
+          </div>
+
+          <div className="lg:col-span-7">
+            <div className="lg:sticky lg:top-28">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-[32px] border border-line bg-wash lg:aspect-[5/6]">
+                <iframe
+                  title="Map showing The Lukla at 1 Prospect Pointe, Niagara Falls, NY"
+                  src={MAP_EMBED_URL}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                  className="absolute inset-0 h-full w-full border-0 [filter:saturate(0.85)]"
+                />
+              </div>
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
+                <p className="text-[15px] text-stone">Free parking on site.</p>
                 <a
                   href={MAPS_URL}
                   target="_blank"
@@ -46,124 +150,13 @@ export default function ContactPage() {
                   Get directions
                   <IconArrowUpRight className="h-4 w-4" />
                 </a>
-                <a href={PHONE_HREF} className="btn btn-line tnum">
-                  Call {PHONE_DISPLAY}
-                </a>
               </div>
-
-              {/* Details grid */}
-              <dl className="mt-14 grid grid-cols-1 gap-10 text-[15px] sm:grid-cols-2">
-                <div>
-                  <dt className="eyebrow">Address</dt>
-                  <dd className="mt-3 leading-[1.7] text-ink">
-                    1 Prospect Pointe, Unit 5
-                    <br />
-                    Niagara Falls, NY 14303
-                    <br />
-                    <span className="text-stone">
-                      Inside Comfort Inn The Pointe
-                    </span>
-                  </dd>
-                </div>
-
-                <div>
-                  <dt className="eyebrow">Phone</dt>
-                  <dd className="mt-3">
-                    <a
-                      href={PHONE_HREF}
-                      className="tnum text-ink underline decoration-ink/25 underline-offset-4 transition-colors hover:decoration-ink"
-                    >
-                      {PHONE_DISPLAY}
-                    </a>
-                  </dd>
-                </div>
-
-                <div>
-                  <dt className="eyebrow">Email</dt>
-                  <dd className="mt-3">
-                    <a
-                      href={`mailto:${EMAIL}`}
-                      className="text-ink underline decoration-ink/25 underline-offset-4 transition-colors hover:decoration-ink"
-                    >
-                      {EMAIL}
-                    </a>
-                  </dd>
-                </div>
-
-                <div>
-                  <dt className="eyebrow">WhatsApp</dt>
-                  <dd className="mt-3">
-                    <a
-                      href={WHATSAPP_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-ink underline decoration-ink/25 underline-offset-4 transition-colors hover:decoration-ink"
-                    >
-                      Message us
-                      <IconArrowUpRight className="h-3.5 w-3.5" />
-                    </a>
-                  </dd>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <dt className="eyebrow">Dining options</dt>
-                  <dd className="mt-3 text-stone">
-                    Dine-in · Takeout · Curbside pickup · Outdoor seating ·
-                    Halal options available
-                  </dd>
-                </div>
-              </dl>
-            </Reveal>
-
-            {/* Right column — hours */}
-            <Reveal delay={0.1} className="lg:col-span-5 lg:col-start-8">
-              <div className="rounded-[24px] bg-wash px-8 py-10">
-                <h2 className="eyebrow">Opening hours</h2>
-                <dl className="mt-6 border-b border-ink/10">
-                  {HOURS.map((h) => (
-                    <div
-                      key={h.day}
-                      className="flex items-baseline justify-between gap-6 border-t border-ink/10 py-5 text-[16px]"
-                    >
-                      <dt className="text-stone">{h.day}</dt>
-                      <dd className="tnum font-medium text-ink">{h.time}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <p className="mt-6 text-[14px] leading-[1.7] text-stone">
-                  Hours subject to change on public holidays. Call ahead to
-                  confirm.
-                </p>
-              </div>
-            </Reveal>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Map CTA band */}
-      <section className="bg-wash py-16 sm:py-20">
-        <div className="mx-auto max-w-[1240px] px-6 lg:px-10">
-          <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-[18px] font-medium text-ink">
-                Three minutes from Niagara Falls State Park
-              </p>
-              <p className="mt-2 text-[15px] text-stone">
-                Parking on site · accessible entrance
-              </p>
-            </div>
-            <a
-              href={MAPS_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-solid shrink-0"
-            >
-              Open in Google Maps
-              <IconArrowUpRight className="h-4 w-4" />
-            </a>
-          </Reveal>
-        </div>
-      </section>
-    </main>
+      <Faq />
+    </>
   );
 }
