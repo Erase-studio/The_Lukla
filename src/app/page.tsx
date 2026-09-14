@@ -7,23 +7,30 @@ import { Reviews } from "@/components/Reviews";
 import { FallsBand } from "@/components/FallsBand";
 import { Visit } from "@/components/Visit";
 import { Footer } from "@/components/Footer";
+import { MobileActionBar } from "@/components/MobileActionBar";
 import { MotionProvider } from "@/components/MotionProvider";
-import { getHeroPlates } from "@/lib/local-photos";
+import { getPlates } from "@/lib/local-photos";
 
 export default function Home() {
+  const plates = getPlates();
+
   return (
     <MotionProvider>
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
       <SiteHeader />
-      <main>
-        <Hero plates={getHeroPlates()} />
+      <main id="main" tabIndex={-1}>
+        <Hero plates={plates} />
         <Story />
-        <Dishes />
-        <Menu />
+        <Dishes plates={plates} />
+        <Menu plates={plates} />
         <Reviews />
         <FallsBand />
         <Visit />
       </main>
       <Footer />
+      <MobileActionBar />
     </MotionProvider>
   );
 }

@@ -1,66 +1,62 @@
 import Image from "next/image";
 import { images } from "@/lib/images";
+import { BRAND_LINE, CUISINES } from "@/lib/menu-data";
+import { ElevationProfile } from "./ElevationProfile";
 import { Reveal } from "./Reveal";
-
-const ELEVATIONS = [
-  { place: "Lukla (लुक्ला), Nepal", note: "Where the trek to Everest begins", height: "2,860 m" },
-  { place: "Niagara Falls, New York", note: "Where we cook", height: "175 m" },
-];
 
 export function Story() {
   return (
-    <section id="story" className="py-28 sm:py-40">
-      <div className="mx-auto grid max-w-[1240px] grid-cols-1 items-center gap-16 px-6 md:grid-cols-12 lg:px-10">
-        <Reveal className="md:col-span-5">
-          <div className="relative mx-auto aspect-[3/4] w-full max-w-[420px] overflow-hidden rounded-t-full bg-wash">
+    <section id="story" aria-labelledby="story-heading" className="section-y">
+      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-12 px-6 md:grid-cols-12 md:gap-10 lg:gap-16 lg:px-10">
+        {/* The arch stays in view while the story beside it scrolls. */}
+        <div className="md:col-span-5">
+          <div className="relative mx-auto aspect-[4/3] w-full max-w-[460px] overflow-hidden rounded-t-full bg-wash md:sticky md:top-28 md:aspect-[4/5]">
             <Image
               src={images.spices}
-              alt="Whole spices"
+              alt="Whole spices: cinnamon, cardamom, peppercorns, cumin and dried chillies"
               fill
-              sizes="(min-width:768px) 420px, 90vw"
+              sizes="(min-width:768px) 460px, 90vw"
               className="object-cover"
             />
           </div>
-        </Reveal>
+        </div>
 
-        <Reveal delay={0.1} className="md:col-span-6 md:col-start-7">
-          <p className="eyebrow">Our story</p>
-          <h2 className="mt-5 font-display text-[clamp(2.2rem,4.4vw,3.75rem)] leading-[1.05] text-ink">
-            Named after a small town in the mountains
-          </h2>
-          <div className="mt-8 max-w-lg space-y-5 text-[17px] leading-[1.7] text-stone">
-            <p>
-              Lukla is a town on a mountainside in eastern Nepal. Its airstrip
-              is where most treks to Everest start.
+        <div className="md:col-span-7 lg:col-span-6 lg:col-start-7">
+          <Reveal>
+            <p className="eyebrow">Our story</p>
+            <h2
+              id="story-heading"
+              className="mt-5 font-display text-[clamp(2.2rem,4.4vw,3.75rem)] leading-[1.05] text-ink"
+            >
+              Named after a small town in the mountains
+            </h2>
+            <p className="mt-7 max-w-lg text-[18px] leading-[1.65] text-stone">
+              Lukla is a mountainside town in eastern Nepal, and its airstrip is
+              where most treks to Everest begin. We named our kitchen after it,
+              and cook two cuisines side by side.
             </p>
-            <p>
-              Our kitchen cooks two cuisines side by side. From the Himalayas:
-              momos, thukpa and chowmein. From South India: dosa, idli, sambar
-              and biryani. Vegan and Jain plates are available on request.
-            </p>
-          </div>
+          </Reveal>
 
-          <dl className="mt-12 max-w-lg">
-            {ELEVATIONS.map((e) => (
-              <div
-                key={e.place}
-                className="flex items-baseline justify-between gap-6 border-t border-line py-5 last:border-b"
-              >
-                <dt>
-                  <span className="block text-[15px] font-medium text-ink">
-                    {e.place}
-                  </span>
-                  <span className="mt-0.5 block text-[14px] text-stone">
-                    {e.note}
-                  </span>
-                </dt>
-                <dd className="tnum font-display text-2xl text-cobalt">
-                  {e.height}
-                </dd>
+          <div className="mt-10 grid max-w-lg grid-cols-2 gap-6 border-t border-line pt-8">
+            {CUISINES.map((cuisine) => (
+              <div key={cuisine.name}>
+                <h3 className="eyebrow text-cobalt">{cuisine.name}</h3>
+                <ul className="mt-4 space-y-1 font-display text-[1.6rem] leading-snug text-ink">
+                  {cuisine.dishes.map((dish) => (
+                    <li key={dish}>{dish}</li>
+                  ))}
+                </ul>
               </div>
             ))}
-          </dl>
-        </Reveal>
+          </div>
+          <p className="mt-6 text-[15px] text-stone">Vegan and Jain plates on request.</p>
+
+          <ElevationProfile />
+
+          <p className="max-w-lg font-display text-[clamp(1.75rem,2.8vw,2.25rem)] leading-[1.15] text-ink">
+            {BRAND_LINE}
+          </p>
+        </div>
       </div>
     </section>
   );

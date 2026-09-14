@@ -1,5 +1,3 @@
-import { images } from "./images";
-
 export const FULL_MENU_URL =
   "https://drive.google.com/drive/folders/1WcSPM2tIlN13lUfKSvUhaSW-K6mtzrSj";
 
@@ -10,6 +8,18 @@ export const PHONE_DISPLAY = "(716) 461-3694";
 export const PHONE_HREF = "tel:+17164613694";
 export const WHATSAPP_URL = "https://wa.me/17164613694";
 export const EMAIL = "info@thelukla.com";
+export const ADDRESS = ["1 Prospect Pointe, Unit 5", "Niagara Falls, NY 14303"] as const;
+
+export const BRAND_LINE = "From the Himalayas to Niagara.";
+
+// From the restaurant's Google Business listing.
+export const GOOGLE_RATING = 4.3;
+export const GOOGLE_REVIEW_COUNT = 566;
+
+export const CUISINES = [
+  { name: "Himalayan", dishes: ["Momo", "Thukpa", "Chowmein"] },
+  { name: "South Indian", dishes: ["Dosa", "Idli", "Sambar", "Biryani"] },
+];
 
 export type MenuLine = {
   name: string;
@@ -18,17 +28,26 @@ export type MenuLine = {
 };
 
 export type MenuGroup = {
+  id: string;
   title: string;
+  cuisine: string;
   kicker: string;
-  image: string;
+  tags: string[];
+  // File name in /public/plates. Without one, the preview shows the tags instead of a photo.
+  plate: string;
+  plateAlt: string;
   lines: MenuLine[];
 };
 
 export const MENU_GROUPS: MenuGroup[] = [
   {
+    id: "momos",
     title: "Momos",
+    cuisine: "Himalayan",
     kicker: "10 pieces, with house achar",
-    image: images.pill.momo,
+    tags: ["Steamed", "Jhol", "Fried"],
+    plate: "momo",
+    plateAlt: "Momos with tomato achar",
     lines: [
       { name: "Chicken Steam Momo", price: "11.95" },
       { name: "Chicken Jhol Momo", note: "In warm sesame broth", price: "13.95" },
@@ -37,9 +56,13 @@ export const MENU_GROUPS: MenuGroup[] = [
     ],
   },
   {
+    id: "dosa-idli",
     title: "Dosa & Idli",
-    kicker: "From the South Indian griddle",
-    image: images.pill.dosa,
+    cuisine: "South Indian",
+    kicker: "From the griddle",
+    tags: ["Masala", "Plain", "Cheese", "Idli"],
+    plate: "dosa",
+    plateAlt: "Masala dosa with sambar and coconut chutney",
     lines: [
       { name: "Masala Dosa", note: "Spiced potato, sambar, chutney", price: "12.95" },
       { name: "Plain Dosa", price: "9.95" },
@@ -48,9 +71,13 @@ export const MENU_GROUPS: MenuGroup[] = [
     ],
   },
   {
+    id: "tandoor-grill",
     title: "Tandoor & Grill",
+    cuisine: "From the clay oven",
     kicker: "With rice or garlic naan",
-    image: images.pill.tandoori,
+    tags: ["Chicken", "Lamb", "Salmon"],
+    plate: "tandoor",
+    plateAlt: "Tandoori chicken",
     lines: [
       { name: "Chicken Tandoori", price: "16.95" },
       { name: "Lamb Seekh Kebab", price: "18.95" },
@@ -59,9 +86,13 @@ export const MENU_GROUPS: MenuGroup[] = [
     ],
   },
   {
+    id: "noodles-soup",
     title: "Noodles & Soup",
-    kicker: "Thukpa, chowmein and soups",
-    image: images.pill.thukpa,
+    cuisine: "Himalayan & South Indian",
+    kicker: "Warm bowls from both kitchens",
+    tags: ["Thukpa", "Chowmein", "Sambar"],
+    plate: "thukpa",
+    plateAlt: "A bowl of thukpa",
     lines: [
       { name: "Chicken Thukpa", note: "Nepali noodle soup", price: "13.95" },
       { name: "Chicken Chowmein", price: "12.95" },
@@ -76,7 +107,9 @@ export type Signature = {
   name: string;
   blurb: string;
   price: string;
-  image: string;
+  plate: string;
+  plateAlt: string;
+  href: string;
 };
 
 export const SIGNATURES: Signature[] = [
@@ -85,41 +118,28 @@ export const SIGNATURES: Signature[] = [
     name: "Chicken Jhol Momo",
     blurb: "Steamed chicken dumplings served in a warm sesame and tomato broth.",
     price: "13.95",
-    image: images.momo,
+    plate: "momo",
+    plateAlt: "Momos with tomato achar",
+    href: "#menu-momos",
   },
   {
     kitchen: "South Indian",
     name: "Masala Dosa",
-    blurb:
-      "A thin, crisp rice crepe filled with spiced potato. Comes with sambar and coconut chutney.",
+    blurb: "A thin, crisp rice crepe filled with spiced potato, with sambar and coconut chutney.",
     price: "12.95",
-    image: images.dosa,
+    plate: "dosa",
+    plateAlt: "Masala dosa with sambar and coconut chutney",
+    href: "#menu-dosa-idli",
   },
   {
     kitchen: "South Indian",
     name: "Goat Biryani",
     blurb: "Basmati rice layered with slow-cooked goat, whole spices and saffron.",
     price: "19.95",
-    image: images.biryani,
+    plate: "biryani",
+    plateAlt: "Biryani in a clay bowl",
+    href: "#menu",
   },
-];
-
-// Minutes after midnight in Niagara Falls time, indexed by weekday (0 is Sunday). Keep in step with HOURS.
-export const OPENING_MINUTES: [number, number][] = [
-  [540, 1320],
-  [570, 1350],
-  [570, 1350],
-  [570, 1350],
-  [570, 1350],
-  [570, 1410],
-  [540, 1410],
-];
-
-export const HOURS = [
-  { day: "Monday to Thursday", time: "9:30 AM – 10:30 PM" },
-  { day: "Friday", time: "9:30 AM – 11:30 PM" },
-  { day: "Saturday", time: "9:00 AM – 11:30 PM" },
-  { day: "Sunday", time: "9:00 AM – 10:00 PM" },
 ];
 
 export const REVIEWS = [

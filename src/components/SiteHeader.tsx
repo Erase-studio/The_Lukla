@@ -3,12 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import {
-  MAPS_URL,
-  OPENING_MINUTES,
-  PHONE_DISPLAY,
-  PHONE_HREF,
-} from "@/lib/menu-data";
+import { MAPS_URL, PHONE_DISPLAY, PHONE_HREF } from "@/lib/menu-data";
+import { useOpeningStatus } from "@/lib/use-opening-status";
 import { IconPhone, IconPin } from "./icons";
 
 // Page order, so the underline moves the same way the page scrolls.
@@ -19,44 +15,11 @@ const NAV_LINKS = [
   { id: "visit", label: "Visit" },
 ];
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-function formatTime(minutes: number) {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  const h12 = ((h + 11) % 12) + 1;
-  return `${h12}${m ? `:${String(m).padStart(2, "0")}` : ""} ${h < 12 ? "AM" : "PM"}`;
-}
-
-// Open/closed right now, in Niagara Falls time rather than the visitor's.
-function openingStatus() {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/New_York",
-    weekday: "short",
-    hour: "numeric",
-    minute: "numeric",
-    hourCycle: "h23",
-  }).formatToParts(new Date());
-  const part = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
-  const day = WEEKDAYS.indexOf(part("weekday"));
-  const now = Number(part("hour")) * 60 + Number(part("minute"));
-  const [open, close] = OPENING_MINUTES[day];
-
-  if (now >= open && now < close) {
-    return { open: true, text: `Open now · until ${formatTime(close)}` };
-  }
-  if (now < open) {
-    return { open: false, text: `Closed · opens ${formatTime(open)}` };
-  }
-  const [nextOpen] = OPENING_MINUTES[(day + 1) % 7];
-  return { open: false, text: `Closed · opens ${formatTime(nextOpen)} tomorrow` };
-}
-
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<string | null>(null);
-  const [status, setStatus] = useState<ReturnType<typeof openingStatus> | null>(null);
+  const status = useOpeningStatus();
 
   useEffect(() => {
     const onScroll = () => {
@@ -66,13 +29,6 @@ export function SiteHeader() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const update = () => setStatus(openingStatus());
-    update();
-    const timer = window.setInterval(update, 60_000);
-    return () => window.clearInterval(timer);
   }, []);
 
   useEffect(() => {
@@ -109,7 +65,7 @@ export function SiteHeader() {
       }`}
     >
       {/* Utility strip: slides away once the page scrolls. */}
-      <div className="h-9 bg-ink text-[13px] text-paper/80">
+      <div className="h-9 bg-ink text-[13px] text-paper/85">
         <div className="mx-auto flex h-full max-w-[1320px] items-center justify-between gap-6 px-5 lg:px-10">
           <p className="flex items-center gap-2.5" aria-live="polite">
             <span
@@ -178,7 +134,7 @@ export function SiteHeader() {
               >
                 The Lukla
               </span>
-              <span className="mt-1.5 flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.2em] text-cobalt">
+              <span className="mt-1.5 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-cobalt">
                 <span className="font-display text-[13px] font-medium normal-case tracking-normal">
                   लुक्ला
                 </span>
@@ -202,7 +158,7 @@ export function SiteHeader() {
                   href={`#${link.id}`}
                   aria-current={isActive ? "location" : undefined}
                   className={`group/link relative px-4 py-3 text-[14px] font-semibold uppercase tracking-[0.12em] [font-stretch:112%] transition-colors duration-300 xl:px-5 ${
-                    isActive ? "text-ink" : "text-ink/60 hover:text-ink"
+                    isActive ? "text-ink" : "text-ink/70 hover:text-ink"
                   }`}
                 >
                   {link.label}
@@ -223,13 +179,18 @@ export function SiteHeader() {
             })}
           </nav>
 
-          <div className="flex items-center gap-3">
+          {/* The menu is what most visitors came for, so it gets the solid button; calling is secondary. */}
+          <div className="flex items-center gap-2.5">
             <a
               href={PHONE_HREF}
-              className="btn btn-solid hidden h-12 gap-2.5 px-6 md:inline-flex"
+              aria-label={`Call to order, ${PHONE_DISPLAY}`}
+              className="btn btn-line hidden h-12 gap-2.5 px-4 md:inline-flex xl:px-5"
             >
               <IconPhone className="h-4 w-4" />
-              Call to order
+              <span className="tnum hidden xl:inline">{PHONE_DISPLAY}</span>
+            </a>
+            <a href="#menu" className="btn btn-solid hidden h-12 px-6 md:inline-flex">
+              View menu
             </a>
             <button
               type="button"
@@ -275,13 +236,19 @@ export function SiteHeader() {
                   )}
                 </a>
               ))}
-              <a
-                href={PHONE_HREF}
-                className="btn btn-solid tnum mt-6 justify-center gap-2.5"
-              >
-                <IconPhone className="h-4 w-4" />
-                Call {PHONE_DISPLAY}
-              </a>
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <a
+                  href="#menu"
+                  onClick={() => setOpen(false)}
+                  className="btn btn-solid justify-center"
+                >
+                  View menu
+                </a>
+                <a href={PHONE_HREF} className="btn btn-line justify-center gap-2">
+                  <IconPhone className="h-4 w-4" />
+                  Call
+                </a>
+              </div>
             </nav>
           </div>
         </div>
