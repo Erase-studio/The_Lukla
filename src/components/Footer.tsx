@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import {
   ADDRESS,
   BRAND_LINE,
@@ -10,14 +11,8 @@ import {
   WHATSAPP_URL,
 } from "@/lib/menu-data";
 import { HOURS } from "@/lib/hours";
+import { NAV_LINKS } from "@/lib/nav";
 import { IconArrowUpRight, IconPhone } from "./icons";
-
-const LINKS = [
-  { label: "Our story", href: "#story" },
-  { label: "Menu", href: "#menu" },
-  { label: "Reviews", href: "#reviews" },
-  { label: "Visit", href: "#visit" },
-];
 
 const linkClass = "inline-block py-1.5 text-[16px] text-ink/80 transition-colors hover:text-ink";
 
@@ -26,7 +21,7 @@ export function Footer() {
     <footer id="site-footer" className="mx-auto max-w-[1240px] px-6 pb-10 pt-20 sm:pt-24 lg:px-10">
       <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
         <div className="sm:col-span-2 lg:col-span-4">
-          <a href="#top" aria-label="The Lukla, back to top" className="inline-flex items-center gap-4">
+          <Link href="/" aria-label="The Lukla, home" className="inline-flex items-center gap-4">
             <Image src="/logo-mark.png" alt="" width={272} height={258} sizes="64px" className="h-14 w-auto" />
             <span aria-hidden className="h-11 w-px bg-line" />
             <span className="flex flex-col leading-none">
@@ -37,7 +32,7 @@ export function Footer() {
                 Himalayan &amp; South Indian
               </span>
             </span>
-          </a>
+          </Link>
           <p className="mt-8 max-w-xs font-display text-[1.9rem] leading-[1.15] text-ink">
             {BRAND_LINE}
           </p>
@@ -46,11 +41,11 @@ export function Footer() {
         <nav aria-label="Footer" className="lg:col-span-2 lg:col-start-6">
           <h2 className="eyebrow">Explore</h2>
           <ul className="mt-4">
-            {LINKS.map((link) => (
+            {NAV_LINKS.map((link) => (
               <li key={link.href}>
-                <a href={link.href} className={linkClass}>
+                <Link href={link.href} className={linkClass}>
                   {link.label}
-                </a>
+                </Link>
               </li>
             ))}
             <li>
@@ -60,7 +55,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className={`${linkClass} inline-flex items-center gap-1.5`}
               >
-                Full menu
+                Full menu (PDF)
                 <IconArrowUpRight className="h-3.5 w-3.5" />
               </a>
             </li>
@@ -120,7 +115,7 @@ export function Footer() {
 
       <div className="mt-16 flex flex-col gap-3 border-t border-line pt-6 text-[14px] text-stone sm:flex-row sm:items-center sm:justify-between">
         <p>© 2026 The Lukla Himalayan &amp; South Indian Kitchen</p>
-        <a href="#top" className="inline-flex items-center gap-2 py-1.5 transition-colors hover:text-ink">
+        <a href="#main" className="inline-flex items-center gap-2 py-1.5 transition-colors hover:text-ink">
           Back to top
           <span aria-hidden>↑</span>
         </a>

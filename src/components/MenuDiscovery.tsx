@@ -1,48 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
+import { useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { FULL_MENU_URL, MENU_GROUPS, type MenuGroup } from "@/lib/menu-data";
+import { MENU_GROUPS, type MenuGroup } from "@/lib/menu-data";
 import type { Plate } from "@/lib/local-photos";
-import { IconArrowRight, IconArrowUpRight, IconPlus } from "./icons";
+import { IconArrowRight, IconPlus } from "./icons";
+import { PlateArt } from "./PlateArt";
 import { Reveal } from "./Reveal";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const DESKTOP = "(min-width: 1024px)";
-
-function PlateArt({
-  group,
-  plate,
-  sizes,
-  className = "",
-}: {
-  group: MenuGroup;
-  plate?: Plate;
-  sizes: string;
-  className?: string;
-}) {
-  return (
-    <div className={`relative aspect-square ${className}`}>
-      {plate ? (
-        <Image
-          src={plate.src}
-          alt={group.plateAlt}
-          fill
-          sizes={sizes}
-          className="object-contain drop-shadow-[0_24px_30px_rgba(21,34,61,0.26)]"
-        />
-      ) : (
-        // No photo yet: a quiet plate with what's on it.
-        <div className="grid h-full w-full place-items-center rounded-full bg-wash p-[16%] text-center shadow-[inset_0_0_0_1px_rgba(21,34,61,0.06)]">
-          <p className="font-display text-[clamp(1.1rem,1.8vw,1.5rem)] leading-snug text-ink/70">
-            {group.tags.join(" · ")}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function Lines({ group }: { group: MenuGroup }) {
   return (
@@ -65,63 +33,46 @@ function Lines({ group }: { group: MenuGroup }) {
   );
 }
 
-export function Menu({ plates }: { plates: Record<string, Plate> }) {
+// The home page's taste of the menu: pick a section to preview it, then go to /menu for everything.
+export function MenuDiscovery({ plates }: { plates: Record<string, Plate> }) {
   const [active, setActive] = useState(0);
   const shown = MENU_GROUPS[Math.max(active, 0)];
-
-  // Dish cards link to #menu-<group>; open that group when the hash changes.
-  useEffect(() => {
-    const openFromHash = () => {
-      const i = MENU_GROUPS.findIndex((g) => window.location.hash === `#menu-${g.id}`);
-      if (i >= 0) setActive(i);
-    };
-    openFromHash();
-    window.addEventListener("hashchange", openFromHash);
-    return () => window.removeEventListener("hashchange", openFromHash);
-  }, []);
-
   const isDesktop = () => window.matchMedia(DESKTOP).matches;
 
   return (
-    <section id="menu" aria-labelledby="menu-heading" className="section-y bg-wash">
+    <section aria-labelledby="whats-cooking-heading" className="section-y bg-wash">
       <div className="mx-auto max-w-[1240px] px-6 lg:px-10">
         <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="eyebrow">Menu</p>
             <h2
-              id="menu-heading"
+              id="whats-cooking-heading"
               className="mt-5 font-display text-[clamp(2.2rem,4.4vw,3.75rem)] leading-[1.05] text-ink"
             >
               What we cook
             </h2>
             <p className="mt-4 max-w-md text-[16px] leading-[1.6] text-stone">
-              A short selection with prices. Pick a section to see what&apos;s on it.
+              A few favourites with prices. Pick a section to see what&apos;s on it.
             </p>
           </div>
-          <a
-            href={FULL_MENU_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-line self-start bg-paper/60 sm:self-auto"
-          >
-            Full menu
-            <IconArrowUpRight className="h-4 w-4" />
-          </a>
+          <Link href="/menu" className="btn btn-solid self-start sm:self-auto">
+            See the full menu
+            <IconArrowRight className="h-4 w-4" />
+          </Link>
         </Reveal>
 
         <div className="mt-12 grid grid-cols-1 gap-12 lg:mt-16 lg:grid-cols-12 lg:gap-16">
           <ul className="border-t border-ink/15 lg:col-span-7">
             {MENU_GROUPS.map((group, i) => {
               const isActive = active === i;
-              const plate = plates[group.plate];
 
               return (
-                <li key={group.id} id={`menu-${group.id}`} className="border-b border-ink/15">
+                <li key={group.id} className="border-b border-ink/15">
                   <h3>
                     <button
                       type="button"
                       aria-expanded={isActive}
-                      aria-controls={`menu-panel-${group.id} menu-preview`}
+                      aria-controls={`preview-panel-${group.id} menu-preview`}
                       onClick={() => setActive(isActive && !isDesktop() ? -1 : i)}
                       onFocus={() => isDesktop() && setActive(i)}
                       onPointerEnter={(e) => e.pointerType === "mouse" && isDesktop() && setActive(i)}
@@ -166,7 +117,7 @@ export function Menu({ plates }: { plates: Record<string, Plate> }) {
 
                   {/* Phones and tablets: the section opens in place. */}
                   <div
-                    id={`menu-panel-${group.id}`}
+                    id={`preview-panel-${group.id}`}
                     role="region"
                     aria-label={group.title}
                     inert={!isActive}
@@ -177,14 +128,22 @@ export function Menu({ plates }: { plates: Record<string, Plate> }) {
                     <div className="overflow-hidden">
                       <div className="flex flex-col gap-6 pb-8 sm:flex-row sm:items-start">
                         <PlateArt
-                          group={group}
-                          plate={plate}
+                          plate={plates[group.plate]}
+                          alt={group.plateAlt}
+                          fallback={group.tags.join(" · ")}
                           sizes="176px"
                           className="w-40 shrink-0 self-center sm:w-44 sm:self-start"
                         />
                         <div className="flex-1">
                           <p className="text-[15px] text-stone">{group.kicker}</p>
                           <Lines group={group} />
+                          <Link
+                            href={`/menu#${group.id}`}
+                            className="mt-5 inline-flex items-center gap-2 py-1.5 text-[15px] font-medium text-ink underline decoration-ink/25 underline-offset-4 hover:decoration-ink"
+                          >
+                            All {group.title.toLowerCase()}
+                            <IconArrowRight className="h-4 w-4" />
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -211,7 +170,12 @@ export function Menu({ plates }: { plates: Record<string, Plate> }) {
                     transition={{ duration: 0.8, ease: EASE }}
                     className="mx-auto w-[62%]"
                   >
-                    <PlateArt group={shown} plate={plates[shown.plate]} sizes="300px" />
+                    <PlateArt
+                      plate={plates[shown.plate]}
+                      alt={shown.plateAlt}
+                      fallback={shown.tags.join(" · ")}
+                      sizes="300px"
+                    />
                   </motion.div>
                   <p className="eyebrow mt-8">{shown.cuisine}</p>
                   <p className="mt-2 font-display text-[2.1rem] leading-tight text-ink">
@@ -219,15 +183,18 @@ export function Menu({ plates }: { plates: Record<string, Plate> }) {
                   </p>
                   <p className="mt-1 text-[15px] text-stone">{shown.kicker}</p>
                   <Lines group={shown} />
+                  <Link
+                    href={`/menu#${shown.id}`}
+                    className="mt-6 inline-flex items-center gap-2 py-1.5 text-[15px] font-medium text-ink underline decoration-ink/25 underline-offset-4 hover:decoration-ink"
+                  >
+                    All {shown.title.toLowerCase()}
+                    <IconArrowRight className="h-4 w-4" />
+                  </Link>
                 </motion.div>
               </AnimatePresence>
             </div>
           </div>
         </div>
-
-        <p className="mt-10 max-w-lg text-[15px] leading-[1.7] text-stone">
-          The full menu also has kebabs, chaat, breads, lassi and desserts.
-        </p>
       </div>
     </section>
   );

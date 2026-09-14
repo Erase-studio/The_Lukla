@@ -2,49 +2,25 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { MAPS_URL, PHONE_DISPLAY, PHONE_HREF } from "@/lib/menu-data";
+import { NAV_LINKS } from "@/lib/nav";
 import { useOpeningStatus } from "@/lib/use-opening-status";
-import { IconPhone, IconPin } from "./icons";
-
-// Page order, so the underline moves the same way the page scrolls.
-const NAV_LINKS = [
-  { id: "story", label: "Our story" },
-  { id: "menu", label: "Menu" },
-  { id: "reviews", label: "Reviews" },
-  { id: "visit", label: "Visit" },
-];
+import { IconArrowUpRight, IconPhone, IconPin } from "./icons";
 
 export function SiteHeader() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [active, setActive] = useState<string | null>(null);
   const status = useOpeningStatus();
 
   useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 24);
-      if (window.scrollY < 200) setActive(null);
-    };
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const sections = NAV_LINKS.map((l) => document.getElementById(l.id)).filter(
-      (el): el is HTMLElement => el !== null,
-    );
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) setActive(entry.target.id);
-        }
-      },
-      { rootMargin: "-45% 0px -50% 0px" },
-    );
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -57,6 +33,8 @@ export function SiteHeader() {
   }, [open]);
 
   const compact = scrolled || open;
+  const isCurrent = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <header
@@ -109,9 +87,10 @@ export function SiteHeader() {
             compact ? "h-[72px]" : "h-[72px] lg:h-[96px]"
           }`}
         >
-          <a
-            href="#top"
-            aria-label="The Lukla, Himalayan and South Indian kitchen. Back to top"
+          <Link
+            href="/"
+            onClick={() => setOpen(false)}
+            aria-label="The Lukla, Himalayan and South Indian kitchen. Home"
             className="flex shrink-0 items-center gap-3 sm:gap-4"
           >
             <Image
@@ -147,50 +126,45 @@ export function SiteHeader() {
                 </span>
               </span>
             </span>
-          </a>
+          </Link>
 
           <nav aria-label="Main" className="hidden items-center lg:flex">
             {NAV_LINKS.map((link) => {
-              const isActive = active === link.id;
+              const current = isCurrent(link.href);
               return (
-                <a
-                  key={link.id}
-                  href={`#${link.id}`}
-                  aria-current={isActive ? "location" : undefined}
-                  className={`group/link relative px-4 py-3 text-[14px] font-semibold uppercase tracking-[0.12em] [font-stretch:112%] transition-colors duration-300 xl:px-5 ${
-                    isActive ? "text-ink" : "text-ink/70 hover:text-ink"
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={current ? "page" : undefined}
+                  className={`group/link relative px-3.5 py-3 text-[14px] font-semibold uppercase tracking-[0.12em] [font-stretch:112%] transition-colors duration-300 xl:px-5 ${
+                    current ? "text-ink" : "text-ink/70 hover:text-ink"
                   }`}
                 >
                   {link.label}
                   <span
                     aria-hidden
-                    className="absolute inset-x-4 bottom-1.5 h-[2px] origin-left scale-x-0 rounded-full bg-ink/20 transition-transform duration-500 ease-soft group-hover/link:scale-x-100 xl:inset-x-5"
+                    className="absolute inset-x-3.5 bottom-1.5 h-[2px] origin-left scale-x-0 rounded-full bg-ink/20 transition-transform duration-500 ease-soft group-hover/link:scale-x-100 xl:inset-x-5"
                   />
-                  {isActive && (
+                  {current && (
                     <motion.span
                       layoutId="nav-underline"
                       aria-hidden
-                      className="absolute inset-x-4 bottom-1.5 h-[2px] rounded-full bg-cobalt xl:inset-x-5"
+                      className="absolute inset-x-3.5 bottom-1.5 h-[2px] rounded-full bg-cobalt xl:inset-x-5"
                       transition={{ type: "spring", stiffness: 420, damping: 38 }}
                     />
                   )}
-                </a>
+                </Link>
               );
             })}
           </nav>
 
-          {/* The menu is what most visitors came for, so it gets the solid button; calling is secondary. */}
           <div className="flex items-center gap-2.5">
             <a
               href={PHONE_HREF}
-              aria-label={`Call to order, ${PHONE_DISPLAY}`}
-              className="btn btn-line hidden h-12 gap-2.5 px-4 md:inline-flex xl:px-5"
+              className="btn btn-solid hidden h-12 gap-2.5 px-6 md:inline-flex"
             >
               <IconPhone className="h-4 w-4" />
-              <span className="tnum hidden xl:inline">{PHONE_DISPLAY}</span>
-            </a>
-            <a href="#menu" className="btn btn-solid hidden h-12 px-6 md:inline-flex">
-              View menu
+              Call to order
             </a>
             <button
               type="button"
@@ -223,30 +197,36 @@ export function SiteHeader() {
         >
           <div className="overflow-hidden">
             <nav aria-label="Main" className="mx-auto flex max-w-[1320px] flex-col px-5 pb-8">
-              {NAV_LINKS.map((link) => (
-                <a
-                  key={link.id}
-                  href={`#${link.id}`}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center justify-between border-t border-line py-4 font-display text-3xl text-ink"
-                >
-                  {link.label}
-                  {active === link.id && (
-                    <span aria-hidden className="h-2 w-2 rounded-full bg-cobalt" />
-                  )}
-                </a>
-              ))}
+              {NAV_LINKS.map((link) => {
+                const current = isCurrent(link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    aria-current={current ? "page" : undefined}
+                    className={`flex items-center justify-between border-t border-line py-4 font-display text-3xl ${
+                      current ? "text-ink" : "text-ink/70"
+                    }`}
+                  >
+                    {link.label}
+                    {current && <span aria-hidden className="h-2 w-2 rounded-full bg-cobalt" />}
+                  </Link>
+                );
+              })}
               <div className="mt-6 grid grid-cols-2 gap-3">
-                <a
-                  href="#menu"
-                  onClick={() => setOpen(false)}
-                  className="btn btn-solid justify-center"
-                >
-                  View menu
-                </a>
-                <a href={PHONE_HREF} className="btn btn-line justify-center gap-2">
+                <a href={PHONE_HREF} className="btn btn-solid justify-center gap-2">
                   <IconPhone className="h-4 w-4" />
                   Call
+                </a>
+                <a
+                  href={MAPS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-line justify-center"
+                >
+                  Directions
+                  <IconArrowUpRight className="h-4 w-4" />
                 </a>
               </div>
             </nav>

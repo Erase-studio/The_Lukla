@@ -9,6 +9,8 @@ export const PHONE_HREF = "tel:+17164613694";
 export const WHATSAPP_URL = "https://wa.me/17164613694";
 export const EMAIL = "info@thelukla.com";
 export const ADDRESS = ["1 Prospect Pointe, Unit 5", "Niagara Falls, NY 14303"] as const;
+export const MAP_EMBED_URL =
+  "https://www.google.com/maps?q=The+Lukla+Himalayan+%26+South+Indian+Kitchen,+1+Prospect+Pointe,+Niagara+Falls,+NY+14303&output=embed";
 
 export const BRAND_LINE = "From the Himalayas to Niagara.";
 
@@ -120,7 +122,7 @@ export const SIGNATURES: Signature[] = [
     price: "13.95",
     plate: "momo",
     plateAlt: "Momos with tomato achar",
-    href: "#menu-momos",
+    href: "/menu#momos",
   },
   {
     kitchen: "South Indian",
@@ -129,7 +131,7 @@ export const SIGNATURES: Signature[] = [
     price: "12.95",
     plate: "dosa",
     plateAlt: "Masala dosa with sambar and coconut chutney",
-    href: "#menu-dosa-idli",
+    href: "/menu#dosa-idli",
   },
   {
     kitchen: "South Indian",
@@ -138,7 +140,7 @@ export const SIGNATURES: Signature[] = [
     price: "19.95",
     plate: "biryani",
     plateAlt: "Biryani in a clay bowl",
-    href: "#menu",
+    href: "/menu#start-here",
   },
 ];
 

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { SIGNATURES } from "@/lib/menu-data";
 import type { Plate } from "@/lib/local-photos";
 import { IconArrowRight } from "./icons";
@@ -29,7 +30,7 @@ export function Dishes({ plates }: { plates: Record<string, Plate> }) {
             const plate = plates[dish.plate];
             return (
               <li key={dish.name} className="w-[80%] shrink-0 snap-start md:w-auto">
-                <a href={dish.href} className="group block rounded-[24px]">
+                <Link href={dish.href} className="group block rounded-[24px]">
                   <div className="relative grid aspect-[4/5] place-items-center overflow-hidden rounded-[24px] bg-wash">
                     <span
                       aria-hidden
@@ -65,7 +66,7 @@ export function Dishes({ plates }: { plates: Record<string, Plate> }) {
                   <p className="mt-2.5 max-w-sm text-[16px] leading-[1.6] text-stone">
                     {dish.blurb}
                   </p>
-                </a>
+                </Link>
               </li>
             );
           })}

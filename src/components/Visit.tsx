@@ -1,5 +1,4 @@
-"use client";
-
+import Link from "next/link";
 import {
   ADDRESS,
   EMAIL,
@@ -9,14 +8,11 @@ import {
   PHONE_HREF,
   WHATSAPP_URL,
 } from "@/lib/menu-data";
-import { HOURS } from "@/lib/hours";
-import { useOpeningStatus } from "@/lib/use-opening-status";
-import { IconArrowUpRight, IconPhone } from "./icons";
+import { IconArrowRight, IconArrowUpRight, IconPhone } from "./icons";
+import { HoursTiles, OpenStatus } from "./OpeningHours";
 import { Reveal } from "./Reveal";
 
 export function Visit() {
-  const status = useOpeningStatus();
-
   return (
     <section id="visit" aria-labelledby="visit-heading" className="px-3 sm:px-5">
       <div className="mx-auto max-w-[1480px] rounded-[36px] bg-ink px-6 py-16 text-paper sm:px-12 sm:py-20 lg:px-16 lg:py-24">
@@ -31,18 +27,7 @@ export function Visit() {
                 Plan your visit
               </h2>
             </div>
-            <p
-              aria-live="polite"
-              className="inline-flex items-center gap-2.5 self-start rounded-full border border-paper/15 px-4 py-2 text-[15px] text-paper/85 md:self-auto"
-            >
-              <span
-                aria-hidden
-                className={`h-2 w-2 rounded-full ${
-                  status === null ? "bg-wall" : status.open ? "bg-[#7ad7a0]" : "bg-saffron"
-                }`}
-              />
-              <span className="tnum">{status?.text ?? "Open every day"}</span>
-            </p>
+            <OpenStatus tone="dark" className="self-start md:self-auto" />
           </Reveal>
 
           <div className="mt-12 grid grid-cols-1 border-y border-paper/10 md:grid-cols-3">
@@ -93,9 +78,9 @@ export function Visit() {
                 Momos, dosa, biryani, tandoor and more.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <a href="#menu" className="btn border border-paper/25 hover:border-paper">
+                <Link href="/menu" className="btn border border-paper/25 hover:border-paper">
                   See the menu
-                </a>
+                </Link>
                 <a
                   href={FULL_MENU_URL}
                   target="_blank"
@@ -127,37 +112,17 @@ export function Visit() {
           </div>
 
           <div className="pt-10">
-            <h3 className="eyebrow text-paper/65">Opening hours</h3>
-            <dl className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
-              {HOURS.map((row) => {
-                const today = status !== null && row.days.includes(status.today);
-                return (
-                  <div
-                    key={row.label}
-                    className={`rounded-2xl px-5 py-4 transition-colors duration-500 ${
-                      today ? "bg-paper text-ink" : "bg-paper/[0.06] text-paper"
-                    }`}
-                  >
-                    <dt
-                      className={`flex items-center justify-between gap-2 text-[14px] ${
-                        today ? "text-ink/70" : "text-paper/70"
-                      }`}
-                    >
-                      <span>
-                        <span className="sr-only">{row.label}</span>
-                        <span aria-hidden>{row.short}</span>
-                      </span>
-                      {today && (
-                        <span className="rounded-full bg-cobalt px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-paper">
-                          Today
-                        </span>
-                      )}
-                    </dt>
-                    <dd className="tnum mt-1.5 text-[16px] font-medium">{row.time}</dd>
-                  </div>
-                );
-              })}
-            </dl>
+            <div className="flex items-baseline justify-between gap-4">
+              <h3 className="eyebrow text-paper/65">Opening hours</h3>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 py-1.5 text-[15px] text-paper/80 underline decoration-paper/30 underline-offset-4 transition-colors hover:text-paper hover:decoration-paper"
+              >
+                Map and FAQs
+                <IconArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <HoursTiles tone="dark" className="mt-5 grid-cols-2 md:grid-cols-4" />
             <p className="mt-8 text-[15px] text-paper/65">
               Dine-in, takeout, curbside pickup and outdoor seating. Halal options available.
             </p>

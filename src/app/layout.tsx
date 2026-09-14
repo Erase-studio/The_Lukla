@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Anek_Latin, Eczar } from "next/font/google";
+import { SiteHeader } from "@/components/SiteHeader";
+import { Footer } from "@/components/Footer";
+import { MobileActionBar } from "@/components/MobileActionBar";
+import { MotionProvider } from "@/components/MotionProvider";
 import "./globals.css";
 
 // Eczar (Rosetta) was drawn for Devanagari and Latin together, so "लुक्ला" and "Lukla" share one voice.
@@ -16,7 +20,10 @@ const anek = Anek_Latin({
 });
 
 export const metadata: Metadata = {
-  title: "The Lukla · Himalayan & South Indian Kitchen in Niagara Falls, NY",
+  title: {
+    default: "The Lukla · Himalayan & South Indian Kitchen in Niagara Falls, NY",
+    template: "%s · The Lukla, Niagara Falls",
+  },
   description:
     "Momos, thukpa, dosa and biryani, cooked to order three minutes from Niagara Falls State Park. Open every day.",
 };
@@ -27,7 +34,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${eczar.variable} ${anek.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-paper text-ink">{children}</body>
+      <body className="min-h-full bg-paper text-ink">
+        <MotionProvider>
+          <a href="#main" className="skip-link">
+            Skip to content
+          </a>
+          <SiteHeader />
+          <main id="main" tabIndex={-1}>
+            {children}
+          </main>
+          <Footer />
+          <MobileActionBar />
+        </MotionProvider>
+      </body>
     </html>
   );
 }

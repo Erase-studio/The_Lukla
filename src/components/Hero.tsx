@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   motion,
   useReducedMotion,
@@ -14,6 +15,7 @@ import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT, MAPS_URL } from "@/lib/menu-data";
 import type { Plate } from "@/lib/local-photos";
 import { useMotionAmplitude } from "@/lib/use-motion-amplitude";
 import { IconArrowUpRight } from "./icons";
+import { SkylightGlow } from "./SkylightGlow";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const HEADLINE = ["Food from", "the Himalayas"];
@@ -115,11 +117,7 @@ export function Hero({ plates }: { plates: Record<string, Plate> }) {
   return (
     <section ref={section} id="top" className="px-3 pt-[120px] sm:px-5 lg:pt-[140px]">
       <div className="relative isolate mx-auto flex max-w-[1480px] flex-col overflow-hidden rounded-[36px] bg-wash">
-        {/* Light through the skylights, as it falls on the dining-room wall. */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -top-[30%] right-[14%] h-[110%] w-[16%] rotate-[30deg] bg-gradient-to-b from-white/75 via-white/25 to-transparent blur-2xl" />
-          <div className="absolute -top-[30%] right-[34%] h-[100%] w-[7%] rotate-[30deg] bg-gradient-to-b from-white/60 via-white/15 to-transparent blur-xl" />
-        </div>
+        <SkylightGlow />
 
         {/* A 3D render of the real Khumbu terrain from above Tengboche (AWS Terrain Tiles elevation data):
             Nuptse, Everest and Lhotse left of centre, Ama Dablam to the right. The sky is transparent. */}
@@ -221,9 +219,9 @@ export function Hero({ plates }: { plates: Record<string, Plate> }) {
               Made to order, three minutes from the Falls.
             </p>
             <div className="mt-7 flex w-full max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center md:mt-8">
-              <a href="#menu" className="btn btn-solid justify-center">
+              <Link href="/menu" className="btn btn-solid justify-center">
                 See the menu
-              </a>
+              </Link>
               <a
                 href={MAPS_URL}
                 target="_blank"
