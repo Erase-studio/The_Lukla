@@ -30,6 +30,38 @@ export function OpenStatus({ tone, className = "" }: { tone: Tone; className?: s
   );
 }
 
+// A plain list of hours between hairlines: days on the left, times on the right, today in ink.
+export function HoursList({ className = "" }: { className?: string }) {
+  const status = useOpeningStatus();
+
+  return (
+    <dl className={`border-t border-line ${className}`}>
+      {HOURS.map((row) => {
+        const today = status !== null && row.days.includes(status.today);
+        return (
+          <div
+            key={row.label}
+            className={`flex items-baseline justify-between gap-4 border-b border-line py-2.5 text-[15px] ${
+              today ? "text-ink" : "text-stone"
+            }`}
+          >
+            <dt className="flex items-center gap-2">
+              <span className="sr-only">{row.label}</span>
+              <span aria-hidden>{row.short}</span>
+              {today && (
+                <span className="text-[12px] font-semibold uppercase tracking-[0.08em] text-cobalt">
+                  Today
+                </span>
+              )}
+            </dt>
+            <dd className={`tnum ${today ? "font-medium" : ""}`}>{row.time}</dd>
+          </div>
+        );
+      })}
+    </dl>
+  );
+}
+
 // One entry per run of days with the same hours; today's is lifted out.
 // Phones get full-width rows (days left, time right) so nothing wraps; wider screens get tiles.
 export function HoursTiles({ tone, className = "" }: { tone: Tone; className?: string }) {

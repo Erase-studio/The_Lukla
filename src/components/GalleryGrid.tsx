@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
+import { useMediaQuery } from "@/lib/use-media-query";
 import { IconChevronLeft, IconChevronRight, IconX } from "./icons";
 
 export type GalleryItem = {
@@ -69,14 +70,7 @@ export function GalleryGrid({ items }: { items: GalleryItem[] }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const reduceMotion = Boolean(useReducedMotion());
   // Tiles only drift from tablet width up: on a two-column phone grid the offsets made tiles overlap.
-  const [wide, setWide] = useState(false);
-  useEffect(() => {
-    const query = window.matchMedia("(min-width: 768px)");
-    const update = () => setWide(query.matches);
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
+  const wide = useMediaQuery("(min-width: 768px)");
   const still = reduceMotion || !wide;
   const [index, setIndex] = useState(0);
   const count = items.length;

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useReducedMotion } from "framer-motion";
 import type { PlaceData } from "@/lib/google-reviews";
 import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT, MAPS_URL, REVIEWS } from "@/lib/menu-data";
 import {
@@ -8,9 +9,14 @@ import {
   IconChevronLeft,
   IconChevronRight,
   IconGoogle,
+  IconPause,
+  IconPlay,
   IconStar,
 } from "./icons";
 import { Reveal } from "./Reveal";
+
+// How long each review stays before the next one slides in.
+const SLIDE_MS = 6500;
 
 // Five grey stars with a saffron copy clipped to the rating, so 4.3 shows as four and a bit.
 function Stars({ rating }: { rating: number }) {
@@ -35,7 +41,14 @@ function Stars({ rating }: { rating: number }) {
 }
 
 export function Reviews({ place }: { place?: PlaceData }) {
+  const region = useRef<HTMLDivElement>(null);
+  const swipeFrom = useRef<number | null>(null);
   const [index, setIndex] = useState(0);
+  const [inView, setInView] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const reduce = Boolean(useReducedMotion());
 
   const displayRating = place?.rating ?? GOOGLE_RATING;
   const displayReviewCount = place?.userRatingCount ?? GOOGLE_REVIEW_COUNT;
@@ -58,14 +71,29 @@ export function Reviews({ place }: { place?: PlaceData }) {
   const count = reviewItems.length;
   const go = (step: number) => setIndex((i) => (i + step + count) % count);
 
+  // Reviews move on by themselves, but only while they're on screen and nobody is reading
+  // closely: hovering, keyboard focus or the pause button holds the current one.
+  const autoplay = !reduce && count > 1;
+  const running = autoplay && inView && !hovered && !focused && !paused;
+
+  useEffect(() => {
+    const node = region.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
+      threshold: 0.35,
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === "ArrowRight") go(1);
     if (e.key === "ArrowLeft") go(-1);
   };
 
   return (
-    <section id="reviews" aria-labelledby="reviews-heading" className="section-y">
-      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-12 px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
+    <section id="reviews" aria-labelledby="reviews-heading" className="section-y overflow-hidden">
+      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">
         <Reveal className="lg:col-span-4">
           <p className="eyebrow">Reviews</p>
           <h2
@@ -94,7 +122,7 @@ export function Reviews({ place }: { place?: PlaceData }) {
             href={MAPS_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-line mt-8"
+            className="btn btn-line mt-8 hidden lg:inline-flex"
           >
             Read reviews on Google
             <IconArrowUpRight className="h-4 w-4" />
@@ -102,49 +130,69 @@ export function Reviews({ place }: { place?: PlaceData }) {
         </Reveal>
 
         <div
+          ref={region}
           role="region"
           aria-roledescription="carousel"
           aria-label="Guest reviews"
           onKeyDown={onKeyDown}
+          onPointerEnter={(e) => e.pointerType === "mouse" && setHovered(true)}
+          onPointerLeave={() => setHovered(false)}
+          onFocus={(e) => e.target.matches(":focus-visible") && setFocused(true)}
+          onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setFocused(false)}
           className="lg:col-span-8"
         >
-          {/* Every quote shares one grid cell, so the card keeps the height of the longest. */}
-          <div className="grid rounded-[32px] bg-wash p-8 sm:p-12">
-            {reviewItems.map((review, i) => {
-              const active = i === index;
-              return (
+          {/* A sliding track: every slide stretches to the tallest, so the card never jumps. */}
+          <div
+            className="touch-pan-y overflow-hidden rounded-[28px] bg-wash sm:rounded-[32px]"
+            onPointerDown={(e) => {
+              swipeFrom.current = e.clientX;
+            }}
+            onPointerUp={(e) => {
+              if (swipeFrom.current === null) return;
+              const dx = e.clientX - swipeFrom.current;
+              swipeFrom.current = null;
+              if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+            }}
+            onPointerCancel={() => {
+              swipeFrom.current = null;
+            }}
+          >
+            <div
+              aria-live={running ? "off" : "polite"}
+              className="flex transition-transform duration-700 ease-soft"
+              style={{ transform: `translateX(-${index * 100}%)` }}
+            >
+              {reviewItems.map((review, i) => (
                 <figure
                   key={review.id}
                   role="group"
                   aria-roledescription="slide"
                   aria-label={`${i + 1} of ${count}`}
-                  inert={!active}
-                  className={`[grid-area:1/1] transition-[opacity,translate] duration-700 ease-soft ${
-                    active ? "opacity-100" : "pointer-events-none translate-y-3 opacity-0"
-                  }`}
+                  inert={i !== index}
+                  className="w-full shrink-0 select-none p-7 sm:p-12"
                 >
                   <p className="flex items-center gap-2 text-[14px] font-medium text-stone">
                     <IconGoogle className="h-4 w-4" />
                     Review on Google
                   </p>
-                  <blockquote className="mt-6 font-display text-[clamp(1.45rem,2.6vw,2.2rem)] leading-[1.32] text-ink">
+                  <blockquote className="mt-5 font-display text-[clamp(1.35rem,2.6vw,2.2rem)] leading-[1.32] text-ink sm:mt-6">
                     &ldquo;{review.quote}&rdquo;
                   </blockquote>
-                  <figcaption className="mt-8 text-[15px] text-stone">
+                  <figcaption className="mt-6 text-[15px] text-stone sm:mt-8">
                     <span className="font-medium text-ink">{review.author}</span>
                     {review.date ? ` · ${review.date}` : ""}
                   </figcaption>
                 </figure>
-              );
-            })}
+              ))}
+            </div>
           </div>
 
-          <div className="mt-5 flex items-center gap-3">
+          <div className="mt-4 flex items-center gap-2 sm:mt-5 sm:gap-3">
             <button
               type="button"
               onClick={() => go(-1)}
               aria-label="Previous review"
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-ink/20 text-ink transition-colors duration-300 hover:border-ink"
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-ink/20 text-ink transition-colors duration-300 hover:border-ink sm:h-12 sm:w-12"
             >
               <IconChevronLeft className="h-5 w-5" />
             </button>
@@ -152,11 +200,13 @@ export function Reviews({ place }: { place?: PlaceData }) {
               type="button"
               onClick={() => go(1)}
               aria-label="Next review"
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-ink/20 text-ink transition-colors duration-300 hover:border-ink"
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-ink/20 text-ink transition-colors duration-300 hover:border-ink sm:h-12 sm:w-12"
             >
               <IconChevronRight className="h-5 w-5" />
             </button>
-            <div className="ml-2 flex flex-1 items-center gap-2">
+
+            {/* The active bar fills while a review is showing; when it's full, the next one slides in. */}
+            <div className="ml-1 flex flex-1 items-center gap-2 sm:ml-2">
               {reviewItems.map((review, i) => (
                 <button
                   key={review.id}
@@ -166,18 +216,48 @@ export function Reviews({ place }: { place?: PlaceData }) {
                   aria-current={i === index ? "true" : undefined}
                   className="group grid h-11 max-w-16 flex-1 place-items-center"
                 >
-                  <span
-                    className={`h-[3px] w-full rounded-full transition-colors duration-500 ${
-                      i === index ? "bg-ink" : "bg-ink/15 group-hover:bg-ink/35"
-                    }`}
-                  />
+                  <span className="relative h-[3px] w-full overflow-hidden rounded-full bg-ink/15 group-hover:bg-ink/30">
+                    {i === index && (
+                      <span
+                        key={index}
+                        onAnimationEnd={() => go(1)}
+                        className="absolute inset-0 origin-left rounded-full bg-ink"
+                        style={
+                          autoplay
+                            ? {
+                                animation: `review-progress ${SLIDE_MS}ms linear forwards`,
+                                animationPlayState: running ? "running" : "paused",
+                              }
+                            : undefined
+                        }
+                      />
+                    )}
+                  </span>
                 </button>
               ))}
             </div>
-            <p className="tnum text-[14px] text-stone" aria-live="polite">
-              {index + 1} / {count}
-            </p>
+
+            {autoplay && (
+              <button
+                type="button"
+                onClick={() => setPaused((p) => !p)}
+                aria-label={paused ? "Play reviews" : "Pause reviews"}
+                className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-stone transition-colors hover:text-ink"
+              >
+                {paused ? <IconPlay className="h-4 w-4" /> : <IconPause className="h-4 w-4" />}
+              </button>
+            )}
           </div>
+
+          <a
+            href={MAPS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-line mt-6 lg:hidden"
+          >
+            Read reviews on Google
+            <IconArrowUpRight className="h-4 w-4" />
+          </a>
         </div>
       </div>
     </section>

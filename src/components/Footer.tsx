@@ -22,14 +22,11 @@ export function Footer() {
     <footer id="site-footer" className="mx-auto max-w-[1240px] px-6 pb-12 pt-16 sm:pt-20 lg:px-10">
       <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
         <div className="sm:col-span-2 lg:col-span-5">
-          <Link href="/" aria-label="The Lukla, home" className="inline-flex items-center gap-4">
+          <Link href="/" aria-label="The Lukla, home" className="inline-flex items-center gap-3">
             <Image src="/logo-mark.png" alt="" width={272} height={258} sizes="64px" className="h-12 w-auto" />
-            <span aria-hidden className="h-10 w-px bg-line" />
-            <span className="flex flex-col leading-none">
-              <span className="font-display text-[22px] font-bold tracking-[-0.015em] text-ink">
-                The Lukla
-              </span>
-              <span className="mt-1 text-[12px] font-semibold uppercase tracking-[0.16em] text-cobalt">
+            <span className="flex flex-col">
+              <span className="font-brand text-[22px] leading-none text-ink">The Lukla</span>
+              <span className="mt-1.5 text-[13px] leading-none text-stone">
                 Himalayan &amp; South Indian
               </span>
             </span>

@@ -109,7 +109,8 @@ export function Dishes({ plates }: { plates: Record<string, Plate> }) {
         </Reveal>
 
         {/* One art-directed set: every dish plate rotates and floats with smooth scroll parallax */}
-        <ul className="-mx-6 mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 md:pb-0 lg:gap-10">
+        {/* scroll-px keeps the snapped card inside the page margin instead of flush with the screen edge. */}
+        <ul className="-mx-6 mt-12 flex snap-x snap-mandatory scroll-px-6 gap-4 overflow-x-auto px-6 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:scroll-px-0 md:px-0 md:pb-0 lg:gap-10">
           {SIGNATURES.map((dish, index) => (
             <DishCard
               key={dish.name}
@@ -121,6 +122,12 @@ export function Dishes({ plates }: { plates: Record<string, Plate> }) {
             />
           ))}
         </ul>
+
+        {/* The menu preview section is desktop-only, so phones and tablets get a way to the menu here. */}
+        <Link href="/menu" className="btn btn-line mt-8 lg:hidden">
+          See the full menu
+          <IconArrowRight className="h-4 w-4" />
+        </Link>
       </div>
     </section>
   );

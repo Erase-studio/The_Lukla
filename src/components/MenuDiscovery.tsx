@@ -5,12 +5,11 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { MENU_GROUPS, type MenuGroup } from "@/lib/menu-data";
 import type { Plate } from "@/lib/local-photos";
-import { IconArrowRight, IconPlus } from "./icons";
+import { IconArrowRight } from "./icons";
 import { PlateArt } from "./PlateArt";
 import { Reveal } from "./Reveal";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-const DESKTOP = "(min-width: 1024px)";
 
 function Lines({ group }: { group: MenuGroup }) {
   return (
@@ -33,16 +32,17 @@ function Lines({ group }: { group: MenuGroup }) {
   );
 }
 
-// The home page's taste of the menu: pick a section to preview it, then go to /menu for everything.
+// The home page's taste of the menu, on laptops and desktops only: hovering or focusing a
+// section brings its plate and prices into the preview. Smaller screens skip it and use the
+// "See the full menu" link under the dishes.
 export function MenuDiscovery({ plates }: { plates: Record<string, Plate> }) {
   const [active, setActive] = useState(0);
-  const shown = MENU_GROUPS[Math.max(active, 0)];
-  const isDesktop = () => window.matchMedia(DESKTOP).matches;
+  const shown = MENU_GROUPS[active];
 
   return (
-    <section aria-labelledby="whats-cooking-heading" className="section-y bg-wash">
-      <div className="mx-auto max-w-[1240px] px-6 lg:px-10">
-        <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+    <section aria-labelledby="whats-cooking-heading" className="section-y hidden bg-wash lg:block">
+      <div className="mx-auto max-w-[1240px] px-10">
+        <Reveal className="flex items-end justify-between gap-6">
           <div>
             <p className="eyebrow">Menu</p>
             <h2
@@ -55,14 +55,14 @@ export function MenuDiscovery({ plates }: { plates: Record<string, Plate> }) {
               A few favourites with prices. Pick a section to see what&apos;s on it.
             </p>
           </div>
-          <Link href="/menu" className="btn btn-solid self-start sm:self-auto">
+          <Link href="/menu" className="btn btn-solid">
             See the full menu
             <IconArrowRight className="h-4 w-4" />
           </Link>
         </Reveal>
 
-        <div className="mt-12 grid grid-cols-1 gap-12 lg:mt-16 lg:grid-cols-12 lg:gap-16">
-          <ul className="border-t border-ink/15 lg:col-span-7">
+        <div className="mt-16 grid grid-cols-12 gap-16">
+          <ul className="col-span-7 border-t border-ink/15">
             {MENU_GROUPS.map((group, i) => {
               const isActive = active === i;
 
@@ -71,12 +71,12 @@ export function MenuDiscovery({ plates }: { plates: Record<string, Plate> }) {
                   <h3>
                     <button
                       type="button"
-                      aria-expanded={isActive}
-                      aria-controls={`preview-panel-${group.id} menu-preview`}
-                      onClick={() => setActive(isActive && !isDesktop() ? -1 : i)}
-                      onFocus={() => isDesktop() && setActive(i)}
-                      onPointerEnter={(e) => e.pointerType === "mouse" && isDesktop() && setActive(i)}
-                      className="group flex w-full items-center gap-5 py-6 text-left sm:py-7"
+                      aria-pressed={isActive}
+                      aria-controls="menu-preview"
+                      onClick={() => setActive(i)}
+                      onFocus={() => setActive(i)}
+                      onPointerEnter={(e) => e.pointerType === "mouse" && setActive(i)}
+                      className="group flex w-full items-center gap-5 py-7 text-left"
                     >
                       <span className="min-w-0 flex-1">
                         <span className="eyebrow block">{group.cuisine}</span>
@@ -91,22 +91,9 @@ export function MenuDiscovery({ plates }: { plates: Record<string, Plate> }) {
                           {group.tags.join(" · ")}
                         </span>
                       </span>
-
                       <span
                         aria-hidden
-                        className={`grid h-12 w-12 shrink-0 place-items-center rounded-full border transition-colors duration-500 lg:hidden ${
-                          isActive ? "border-ink bg-ink text-paper" : "border-ink/20 text-ink"
-                        }`}
-                      >
-                        <IconPlus
-                          className={`h-5 w-5 transition-transform duration-500 ease-soft ${
-                            isActive ? "rotate-45" : ""
-                          }`}
-                        />
-                      </span>
-                      <span
-                        aria-hidden
-                        className={`hidden h-12 w-12 shrink-0 place-items-center rounded-full bg-ink text-paper transition duration-500 ease-soft lg:grid ${
+                        className={`grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ink text-paper transition duration-500 ease-soft ${
                           isActive ? "translate-x-0 opacity-100" : "-translate-x-3 opacity-0"
                         }`}
                       >
@@ -114,48 +101,17 @@ export function MenuDiscovery({ plates }: { plates: Record<string, Plate> }) {
                       </span>
                     </button>
                   </h3>
-
-                  {/* Phones and tablets: the section opens in place. */}
-                  <div
-                    id={`preview-panel-${group.id}`}
-                    role="region"
-                    aria-label={group.title}
-                    inert={!isActive}
-                    className={`grid transition-[grid-template-rows] duration-700 ease-soft lg:hidden ${
-                      isActive ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                    }`}
-                  >
-                    <div className="overflow-hidden">
-                      <div className="flex flex-col gap-6 pb-8 sm:flex-row sm:items-start">
-                        <PlateArt
-                          plate={plates[group.plate]}
-                          alt={group.plateAlt}
-                          fallback={group.tags.join(" · ")}
-                          sizes="176px"
-                          className="w-40 shrink-0 self-center sm:w-44 sm:self-start"
-                        />
-                        <div className="flex-1">
-                          <p className="text-[15px] text-stone">{group.kicker}</p>
-                          <Lines group={group} />
-                          <Link
-                            href={`/menu#${group.id}`}
-                            className="mt-4 inline-flex min-h-11 items-center gap-2 text-[15px] font-medium text-ink underline decoration-ink/25 underline-offset-4 hover:decoration-ink"
-                          >
-                            All {group.title.toLowerCase()}
-                            <IconArrowRight className="h-4 w-4" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </li>
               );
             })}
           </ul>
 
-          {/* Desktop: hovering or focusing a section brings its plate and prices into the preview. */}
-          <div className="hidden lg:col-span-5 lg:block">
-            <div id="menu-preview" className="sticky top-28 rounded-[32px] bg-paper p-8 xl:p-10">
+          <div className="col-span-5">
+            <div
+              id="menu-preview"
+              aria-live="polite"
+              className="sticky top-28 rounded-[32px] bg-paper p-8 xl:p-10"
+            >
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={shown.id}

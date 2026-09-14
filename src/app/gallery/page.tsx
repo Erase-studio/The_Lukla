@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ClosingCta, darkPrimary, darkSecondary } from "@/components/ClosingCta";
 import { GalleryGrid, type GalleryItem } from "@/components/GalleryGrid";
 import { PageHeader } from "@/components/PageHeader";
-import { IconArrowRight } from "@/components/icons";
 import { images } from "@/lib/images";
 import { getGalleryPhotos, getPlates } from "@/lib/local-photos";
 
@@ -89,19 +86,6 @@ export default function Gallery() {
 
       <GalleryGrid items={items} />
 
-      <ClosingCta
-        eyebrow="Hungry yet?"
-        title="Taste it in person"
-        body="Everything here is on the menu, cooked to order every day from breakfast to late dinner."
-      >
-        <Link href="/menu" className={darkPrimary}>
-          See the menu
-          <IconArrowRight className="h-4 w-4" />
-        </Link>
-        <Link href="/contact" className={darkSecondary}>
-          Plan your visit
-        </Link>
-      </ClosingCta>
     </>
   );
 }

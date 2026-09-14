@@ -26,6 +26,7 @@
   --color-saffron: var(--saffron);
   --font-display: var(--font-eczar);
   --font-sans: var(--font-anek);
+  --font-brand: var(--font-young-serif);
 }
 
 @theme {
@@ -140,6 +141,16 @@ body {
 
   .btn-line:hover {
     border-color: var(--ink);
+  }
+}
+
+/* Fills the active review's progress bar; when it finishes, the next review slides in. */
+@keyframes review-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
   }
 }
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Faq } from "@/components/Faq";
-import { HoursTiles, OpenStatus } from "@/components/OpeningHours";
+import { HoursTiles } from "@/components/OpeningHours";
 import { PageHeader } from "@/components/PageHeader";
 import { ScrollTurn } from "@/components/ScrollTurn";
 import {
@@ -85,9 +85,7 @@ export default function Contact() {
             </ScrollTurn>
           )
         }
-      >
-        <OpenStatus tone="light" className="mt-8" />
-      </PageHeader>
+      />
 
       <section aria-label="Ways to reach us" className="section-y">
         <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-12 px-6 lg:grid-cols-12 lg:gap-16 lg:px-10">

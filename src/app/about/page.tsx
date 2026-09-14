@@ -6,7 +6,6 @@ import { PageHeader } from "@/components/PageHeader";
 import { Reviews } from "@/components/Reviews";
 import { ScrollTurn } from "@/components/ScrollTurn";
 import { Story } from "@/components/Story";
-import { WhatToExpect } from "@/components/WhatToExpect";
 import { IconArrowRight, IconArrowUpRight } from "@/components/icons";
 import { MAPS_URL } from "@/lib/menu-data";
 
@@ -37,7 +36,6 @@ export default function About() {
       />
 
       <Story />
-      <WhatToExpect />
       <Reviews />
 
       <ClosingCta

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Anek_Latin, Eczar } from "next/font/google";
+import { Anek_Latin, Eczar, Young_Serif } from "next/font/google";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
 import { MobileActionBar } from "@/components/MobileActionBar";
@@ -7,10 +7,17 @@ import { MotionProvider } from "@/components/MotionProvider";
 import "./globals.css";
 import { PageTransition } from "@/components/PageTransition";
 
-// Eczar (Rosetta) was drawn for Devanagari and Latin together, so "लुक्ला" and "Lukla" share one voice.
+// Eczar (Rosetta): a warm, slightly calligraphic serif for headings.
 const eczar = Eczar({
   variable: "--font-eczar",
-  subsets: ["latin", "devanagari"],
+  subsets: ["latin"],
+});
+
+// Young Serif (Bastien Sozeau): a heavy, friendly serif used only for the wordmark.
+const youngSerif = Young_Serif({
+  variable: "--font-young-serif",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 // Anek Latin (Ek Type, Mumbai): a variable width sans for body copy.
@@ -50,7 +57,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${eczar.variable} ${anek.variable} h-full antialiased`}
+      className={`${eczar.variable} ${anek.variable} ${youngSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-paper text-ink">
         <MotionProvider>

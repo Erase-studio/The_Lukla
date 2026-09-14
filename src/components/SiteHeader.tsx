@@ -88,54 +88,34 @@ export function SiteHeader() {
       >
         <div
           className={`mx-auto flex max-w-[1320px] items-center justify-between gap-6 px-5 transition-[height] duration-500 ease-soft lg:px-10 ${
-            compact ? "h-[72px]" : "h-[72px] lg:h-[96px]"
+            compact ? "h-[68px] lg:h-[76px]" : "h-[68px] lg:h-[88px]"
           }`}
         >
+          {/* The full lockup (badge, wordmark and tagline) is one image from /public/logo-text.png. */}
           <Link
             href="/"
             onClick={() => setOpen(false)}
             aria-label="The Lukla, Himalayan and South Indian kitchen. Home"
-            className="flex shrink-0 items-center gap-3 sm:gap-4"
+            className="flex min-w-0 shrink items-center"
           >
             <Image
-              src="/logo-mark.png"
-              alt=""
-              width={272}
-              height={258}
-              sizes="72px"
+              src="/logo-text.png"
+              alt="The Lukla, Himalayan & South Indian"
+              width={1030}
+              height={242}
+              sizes="(min-width:1024px) 260px, 220px"
               preload
               className={`w-auto transition-[height] duration-500 ease-soft ${
-                compact ? "h-12" : "h-12 lg:h-[68px]"
+                compact ? "h-11 lg:h-12" : "h-11 sm:h-12 lg:h-[60px]"
               }`}
             />
-            <span aria-hidden className="hidden h-11 w-px bg-line sm:block" />
-            <span className="flex flex-col leading-none">
-              <span
-                className={`font-display font-bold tracking-[-0.015em] text-ink transition-[font-size] duration-500 ease-soft ${
-                  compact
-                    ? "text-[22px] lg:text-[24px]"
-                    : "text-[22px] lg:text-[30px]"
-                }`}
-              >
-                The Lukla
-              </span>
-              <span className="mt-1.5 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-cobalt">
-                <span className="font-display text-[13px] font-medium normal-case tracking-normal">
-                  लुक्ला
-                </span>
-                <span
-                  aria-hidden
-                  className="hidden h-2.5 w-px bg-cobalt/40 min-[380px]:inline-block"
-                />
-                <span className="hidden min-[380px]:inline">
-                  Himalayan &amp; South Indian
-                </span>
-              </span>
-            </span>
           </Link>
 
-          {/* Desktop nav */}
-          <nav aria-label="Main" className="hidden items-center lg:flex">
+          {/* Desktop nav: a quiet pill rail; the light-blue pill glides to the current page. */}
+          <nav
+            aria-label="Main"
+            className="hidden items-center gap-0.5 rounded-full border border-line bg-paper p-1 lg:flex"
+          >
             {NAV_LINKS.map((link) => {
               const current = isCurrent(link.href);
               return (
@@ -143,30 +123,25 @@ export function SiteHeader() {
                   key={link.href}
                   href={link.href}
                   aria-current={current ? "page" : undefined}
-                  className={`group/link relative px-3.5 py-3 text-[14px] font-semibold uppercase tracking-[0.12em] [font-stretch:112%] transition-colors duration-300 xl:px-5 ${
-                    current ? "text-ink" : "text-ink/70 hover:text-ink"
+                  className={`relative isolate inline-flex h-10 items-center rounded-full px-4 text-[15px] font-medium transition-colors duration-300 xl:px-5 ${
+                    current ? "text-ink" : "text-stone hover:bg-wash/60 hover:text-ink"
                   }`}
                 >
-                  {link.label}
-                  {/* Hover underline */}
-                  <span
-                    aria-hidden
-                    className="absolute inset-x-3.5 bottom-1.5 h-[2px] origin-left scale-x-0 rounded-full bg-ink/20 transition-transform duration-500 ease-soft group-hover/link:scale-x-100 xl:inset-x-5"
-                  />
                   {current && (
                     <motion.span
-                      layoutId="nav-underline"
+                      layoutId="nav-pill"
                       aria-hidden
-                      className="absolute inset-x-3.5 bottom-1.5 h-[2px] rounded-full bg-cobalt xl:inset-x-5"
+                      className="absolute inset-0 -z-10 rounded-full bg-wash"
                       transition={{ type: "spring", stiffness: 420, damping: 38 }}
                     />
                   )}
+                  {link.label}
                 </Link>
               );
             })}
           </nav>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex shrink-0 items-center gap-2">
             <a
               href={PHONE_HREF}
               className="btn btn-solid hidden h-12 gap-2.5 px-6 md:inline-flex"
@@ -178,7 +153,7 @@ export function SiteHeader() {
             <a
               href={PHONE_HREF}
               aria-label={`Call to order, ${PHONE_DISPLAY}`}
-              className="grid h-12 w-12 place-items-center rounded-full bg-ink text-paper md:hidden"
+              className="grid h-11 w-11 place-items-center rounded-full bg-ink text-paper md:hidden"
             >
               <IconPhone className="h-5 w-5" />
             </a>
@@ -188,7 +163,7 @@ export function SiteHeader() {
               aria-expanded={open}
               aria-controls="mobile-nav"
               onClick={() => setOpen((o) => !o)}
-              className="relative grid h-12 w-12 place-items-center rounded-full border border-ink/15 transition-colors hover:border-ink lg:hidden"
+              className="relative grid h-11 w-11 place-items-center rounded-full border border-ink/15 transition-colors hover:border-ink lg:hidden"
             >
               <span
                 className={`absolute h-[1.5px] w-5 bg-ink transition-transform duration-500 ease-soft ${
