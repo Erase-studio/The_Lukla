@@ -9,18 +9,12 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { SKYLINE } from "@/lib/skyline";
 import { MAPS_URL } from "@/lib/menu-data";
 import type { Plate, PlateSlot } from "@/lib/local-photos";
 import { IconArrowUpRight } from "./icons";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const HEADLINE = ["Food from", "the Himalayas"];
-const { width: W, height: H } = SKYLINE;
-
-// The dining-room wall, far ridge to near, as opaque tints of the card's blue.
-const TONES = ["#d3e0f5", "#bacdee", "#a1bbe5"];
-
 // Where each of the restaurant's own plates sits around the headline, cropped by the card edge.
 const SLOTS: Record<
   PlateSlot,
@@ -113,38 +107,27 @@ export function Hero({ plates }: { plates: Plate[] }) {
           <div className="absolute -top-[30%] right-[34%] h-[100%] w-[7%] rotate-[30deg] bg-gradient-to-b from-white/60 via-white/15 to-transparent blur-xl" />
         </div>
 
+        {/* A 3D render of the real Khumbu terrain from above Tengboche (AWS Terrain Tiles elevation data):
+            Nuptse, Everest and Lhotse left of centre, Ama Dablam to the right. The sky is transparent. */}
         <motion.div
           style={{ y: still ? 0 : ridgeDrift }}
-          className="absolute inset-x-0 bottom-0 -z-10 h-[44%]"
+          className="pointer-events-none absolute bottom-0 left-1/2 -z-10 w-[290%] -translate-x-1/2 sm:w-[140%] lg:w-full"
         >
-          <svg
-            viewBox={`0 0 ${W} ${H}`}
-            preserveAspectRatio="none"
-            className="h-full w-full"
-            aria-hidden
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.8, delay: 0.15, ease: EASE }}
           >
-            {SKYLINE.layers.map((d, i) => (
-              <motion.path
-                key={i}
-                d={d}
-                fill={TONES[i]}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1.4, delay: 0.2 + i * 0.15, ease: EASE }}
-              />
-            ))}
-            <motion.path
-              d={SKYLINE.ridge}
-              fill="none"
-              stroke="var(--cobalt)"
-              strokeOpacity={0.35}
-              strokeWidth={1.2}
-              vectorEffect="non-scaling-stroke"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 2.6, delay: 0.3, ease: EASE }}
+            <Image
+              src="/himalaya-range.webp"
+              alt=""
+              width={2400}
+              height={588}
+              loading="eager"
+              sizes="(min-width:1024px) 1480px, 200vw"
+              className="h-auto w-full"
             />
-          </svg>
+          </motion.div>
         </motion.div>
 
         <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center px-6 pt-12 text-center sm:pt-16 lg:pt-[5svh]">
