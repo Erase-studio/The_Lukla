@@ -51,10 +51,10 @@ export const MENU_GROUPS: MenuGroup[] = [
     plate: "momo",
     plateAlt: "Momos with tomato achar",
     lines: [
-      { name: "Chicken Steam Momo", price: "11.95" },
-      { name: "Chicken Jhol Momo", note: "In warm sesame broth", price: "13.95" },
-      { name: "Veg Steam Momo", price: "10.95" },
-      { name: "Veg Fried Momo", price: "11.95" },
+      { name: "Chicken Steam Momo", price: "14.99" },
+      { name: "Chicken Jhol Momo", note: "In warm sesame broth", price: "17.99" },
+      { name: "Veg Steam Momo", price: "13.99" },
+      { name: "Veg Fried Momo", price: "14.99" },
     ],
   },
   {
@@ -66,10 +66,10 @@ export const MENU_GROUPS: MenuGroup[] = [
     plate: "dosa",
     plateAlt: "Masala dosa with sambar and coconut chutney",
     lines: [
-      { name: "Masala Dosa", note: "Spiced potato, sambar, chutney", price: "12.95" },
-      { name: "Plain Dosa", price: "9.95" },
-      { name: "Cheese Dosa", price: "13.95" },
-      { name: "Soft Idli", note: "3 pieces", price: "8.95" },
+      { name: "Masala Dosa", note: "Spiced potato, onion and cilantro", price: "16.99" },
+      { name: "Plain Dosa", price: "14.99" },
+      { name: "Cheese Dosa", price: "17.99" },
+      { name: "Soft Idli", note: "3 pieces", price: "12.99" },
     ],
   },
   {
@@ -81,10 +81,10 @@ export const MENU_GROUPS: MenuGroup[] = [
     plate: "tandoor",
     plateAlt: "Tandoori chicken",
     lines: [
-      { name: "Chicken Tandoori", price: "16.95" },
-      { name: "Lamb Seekh Kebab", price: "18.95" },
-      { name: "Grilled Salmon", note: "Lemon butter", price: "21.95" },
-      { name: "Tandoori Mixed Grill", price: "24.95" },
+      { name: "Chicken Tandoori", price: "19.99" },
+      { name: "Lamb Seekh Kebab", price: "21.99" },
+      { name: "Grilled Salmon", note: "Lemon butter", price: "21.99" },
+      { name: "Tandoori Mixed Grill", price: "23.99" },
     ],
   },
   {
@@ -96,10 +96,10 @@ export const MENU_GROUPS: MenuGroup[] = [
     plate: "thukpa",
     plateAlt: "A bowl of thukpa",
     lines: [
-      { name: "Chicken Thukpa", note: "Nepali noodle soup", price: "13.95" },
-      { name: "Chicken Chowmein", price: "12.95" },
-      { name: "South Indian Sambar", price: "7.95" },
-      { name: "Tomato Garlic Soup", price: "6.95" },
+      { name: "Chicken Thukpa", note: "Nepali noodle soup", price: "13.99" },
+      { name: "Chicken Noodles", price: "16.99" },
+      { name: "South Indian Sambar", price: "12.99" },
+      { name: "Tomato Garlic Soup", price: "9.99" },
     ],
   },
 ];
@@ -119,7 +119,7 @@ export const SIGNATURES: Signature[] = [
     kitchen: "Himalayan",
     name: "Chicken Jhol Momo",
     blurb: "Steamed chicken dumplings served in a warm sesame and tomato broth.",
-    price: "13.95",
+    price: "17.99",
     plate: "momo",
     plateAlt: "Momos with tomato achar",
     href: "/menu#momos",
@@ -128,7 +128,7 @@ export const SIGNATURES: Signature[] = [
     kitchen: "South Indian",
     name: "Masala Dosa",
     blurb: "A thin, crisp rice crepe filled with spiced potato, with sambar and coconut chutney.",
-    price: "12.95",
+    price: "16.99",
     plate: "dosa",
     plateAlt: "Masala dosa with sambar and coconut chutney",
     href: "/menu#dosa-idli",
@@ -136,11 +136,11 @@ export const SIGNATURES: Signature[] = [
   {
     kitchen: "South Indian",
     name: "Goat Biryani",
-    blurb: "Basmati rice layered with slow-cooked goat, whole spices and saffron.",
-    price: "19.95",
+    blurb: "Aromatic rice cooked with goat, fresh herbs and nuts, served with raita.",
+    price: "19.99",
     plate: "biryani",
     plateAlt: "Biryani in a clay bowl",
-    href: "/menu#start-here",
+    href: "/menu#biryani",
   },
 ];
 

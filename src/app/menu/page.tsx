@@ -5,7 +5,8 @@ import {
   darkPrimary,
   darkSecondary,
 } from "@/components/ClosingCta";
-import { MenuPage } from "@/components/MenuPage";
+import { MenuBook } from "@/components/menu-book/MenuBook";
+import { MenuText } from "@/components/menu-book/MenuText";
 import { PageHeader } from "@/components/PageHeader";
 import { ScrollTurn } from "@/components/ScrollTurn";
 import { IconArrowUpRight, IconPhone } from "@/components/icons";
@@ -15,7 +16,7 @@ import { FULL_MENU_URL, PHONE_HREF } from "@/lib/menu-data";
 export const metadata: Metadata = {
   title: "Menu",
   description:
-    "Momos, thukpa, dosa, idli and tandoor dishes with prices. Vegan and Jain plates on request, halal options available.",
+    "The Lukla's full menu with prices: momos, chowmein, dosa, idli, tandoor, curries, biryani, breads and breakfast, plus Jain and vegan menus.",
 };
 
 export default function Menu() {
@@ -55,33 +56,41 @@ export default function Menu() {
       <PageHeader
         eyebrow="Menu"
         title="What we cook"
-        intro="Momos and thukpa from the Himalayas, dosa and idli from South India, and dishes from the tandoor. Cooked to order, every day."
+        intro="Flip through the whole menu: momos and thukpa from the Himalayas, dosa and biryani from South India, and dishes from the tandoor."
         art={art}
       >
         <p className="mt-6 text-[15px] font-medium text-ink/75">
-          Vegan and Jain on request · Halal options available
+          Jain and vegan menus inside · Halal options available
         </p>
       </PageHeader>
 
-      <MenuPage plates={plates} />
+      <MenuText />
+      <MenuBook
+        plates={{
+          momo: plates.momo?.src,
+          dosa: plates.dosa?.src,
+          biryani: plates.biryani?.src,
+          chai: plates.chai?.src,
+        }}
+      />
 
       <ClosingCta
-        eyebrow="There's more"
-        title="The full menu"
-        body="Kebabs, chaat, breads, lassi and desserts are on the full menu too. Call ahead for takeout or curbside pickup."
+        eyebrow="Ready to order?"
+        title="Call ahead for takeout"
+        body="Everything in the book is cooked to order. Call for takeout or curbside pickup, or just walk in."
       >
+        <a href={PHONE_HREF} className={`${darkPrimary} gap-2.5`}>
+          <IconPhone className="h-4 w-4" />
+          Call to order
+        </a>
         <a
           href={FULL_MENU_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className={darkPrimary}
+          className={darkSecondary}
         >
           Full menu (PDF)
           <IconArrowUpRight className="h-4 w-4" />
-        </a>
-        <a href={PHONE_HREF} className={`${darkSecondary} gap-2.5`}>
-          <IconPhone className="h-4 w-4" />
-          Call to order
         </a>
       </ClosingCta>
     </>
