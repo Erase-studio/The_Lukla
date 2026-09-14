@@ -30,6 +30,7 @@ type Slot = {
   notes: string;
   href: string;
   box: string;
+  badgePlacement: "top" | "bottom";
   drift: Drift;
   alt: string;
   delay: number;
@@ -44,6 +45,7 @@ const SLOTS: Slot[] = [
     notes: "Sesame & roasted tomato achar",
     href: "/menu#momos",
     box: "left-[-3%] top-[7%] w-[17%] lg:w-[14%]",
+    badgePlacement: "bottom",
     drift: { rotate: -125, x: -55, y: -85 },
     alt: "Momos with tomato achar",
     delay: 0.8,
@@ -55,6 +57,7 @@ const SLOTS: Slot[] = [
     notes: "Crisp crepe, spiced potato, sambar",
     href: "/menu#dosa-idli",
     box: "right-[-3%] top-[5%] w-[18%] lg:w-[15%]",
+    badgePlacement: "bottom",
     drift: { rotate: 135, x: 50, y: -70 },
     alt: "Masala dosa with sambar and coconut chutney",
     delay: 0.9,
@@ -65,7 +68,8 @@ const SLOTS: Slot[] = [
     cuisine: "South Indian",
     notes: "Aged basmati, whole spices & saffron",
     href: "/menu#biryani-rice",
-    box: "bottom-[-7%] left-[4%] w-[19%] lg:w-[16%]",
+    box: "bottom-[3%] left-[4%] w-[19%] lg:w-[16%]",
+    badgePlacement: "top",
     drift: { rotate: 145, x: -45, y: 80 },
     alt: "Biryani in a clay bowl",
     delay: 1,
@@ -76,7 +80,8 @@ const SLOTS: Slot[] = [
     cuisine: "Himalayan",
     notes: "Fresh ginger, cloves & green cardamom",
     href: "/menu",
-    box: "bottom-[9%] right-[6%] w-[12%] lg:w-[9.5%]",
+    box: "bottom-[9%] right-[5%] w-[13%] lg:w-[10%]",
+    badgePlacement: "top",
     drift: { rotate: -115, x: 38, y: 55 },
     alt: "A cup of tea on a saucer",
     delay: 1.1,
@@ -105,7 +110,7 @@ function FloatingPlate({
   return (
     <motion.div
       style={{ rotate, x, y }}
-      className={`absolute hidden aspect-square md:block ${slot.box}`}
+      className={`absolute hidden aspect-square z-20 hover:z-30 md:block ${slot.box}`}
     >
       <Link
         href={slot.href}
@@ -121,7 +126,7 @@ function FloatingPlate({
           {/* Warm culinary ambient glow on hover */}
           <span
             aria-hidden
-            className="absolute inset-0 -z-10 rounded-full bg-saffron/0 blur-xl transition duration-500 group-hover/plate:bg-saffron/20"
+            className="absolute inset-0 -z-10 rounded-full bg-saffron/0 blur-xl transition duration-500 group-hover/plate:bg-saffron/25"
           />
 
           <Image
@@ -132,8 +137,14 @@ function FloatingPlate({
             className="object-contain drop-shadow-[0_22px_26px_rgba(21,34,61,0.26)]"
           />
 
-          {/* Interactive glassmorphic flavor badge */}
-          <div className="pointer-events-none absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-white/70 bg-paper/95 px-3.5 py-1 text-center shadow-[0_12px_24px_-8px_rgba(21,34,61,0.3)] backdrop-blur-md opacity-0 translate-y-2 transition-all duration-300 ease-soft group-hover/plate:opacity-100 group-hover/plate:translate-y-0 group-focus-visible/plate:opacity-100 group-focus-visible/plate:translate-y-0">
+          {/* Interactive glassmorphic flavor badge - strategically positioned to never be cut off */}
+          <div
+            className={`pointer-events-none absolute left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-white/80 bg-paper/95 px-3.5 py-1 text-center shadow-[0_12px_24px_-8px_rgba(21,34,61,0.35)] backdrop-blur-md opacity-0 transition-all duration-300 ease-soft group-hover/plate:opacity-100 group-focus-visible/plate:opacity-100 ${
+              slot.badgePlacement === "top"
+                ? "-top-3.5 -translate-y-full translate-y-2 group-hover/plate:translate-y-0 group-focus-visible/plate:translate-y-0"
+                : "-bottom-3.5 translate-y-2 group-hover/plate:translate-y-0 group-focus-visible/plate:translate-y-0"
+            }`}
+          >
             <span className="block text-[12px] font-bold text-ink">
               {slot.title}
             </span>
