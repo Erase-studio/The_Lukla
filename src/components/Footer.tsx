@@ -13,7 +13,9 @@ import {
 import { NAV_LINKS } from "@/lib/nav";
 import { IconArrowUpRight } from "./icons";
 
-const linkClass = "inline-block py-1.5 text-[15px] text-stone transition-colors hover:text-ink";
+// Every link is at least 44px tall so it's easy to tap with a thumb.
+const linkClass =
+  "inline-flex min-h-11 items-center text-[15px] text-stone transition-colors hover:text-ink";
 
 export function Footer() {
   return (
@@ -27,7 +29,7 @@ export function Footer() {
               <span className="font-display text-[22px] font-bold tracking-[-0.015em] text-ink">
                 The Lukla
               </span>
-              <span className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-cobalt">
+              <span className="mt-1 text-[12px] font-semibold uppercase tracking-[0.16em] text-cobalt">
                 Himalayan &amp; South Indian
               </span>
             </span>
@@ -39,7 +41,7 @@ export function Footer() {
 
         <nav aria-label="Footer Navigation" className="lg:col-span-3 lg:col-start-7">
           <h2 className="eyebrow">Explore</h2>
-          <ul className="mt-4 space-y-0.5">
+          <ul className="mt-3 grid grid-cols-2 gap-x-6 sm:grid-cols-1">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className={linkClass}>
@@ -52,7 +54,7 @@ export function Footer() {
                 href={FULL_MENU_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${linkClass} inline-flex items-center gap-1.5`}
+                className={`${linkClass} gap-1.5`}
               >
                 Full menu (PDF)
                 <IconArrowUpRight className="h-3.5 w-3.5" />
@@ -63,36 +65,39 @@ export function Footer() {
 
         <div className="lg:col-span-3">
           <h2 className="eyebrow">Location &amp; Contact</h2>
-          <div className="mt-4 space-y-3 text-[15px] text-stone">
-            <a
-              href={MAPS_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block leading-[1.6] transition-colors hover:text-ink"
-            >
-              {ADDRESS[0]}, {ADDRESS[1]}
-            </a>
-            <p>
-              <a href={PHONE_HREF} className="tnum font-medium text-ink transition-colors hover:text-cobalt">
+          <ul className="mt-3">
+            <li>
+              <a
+                href={MAPS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${linkClass} py-2 leading-[1.5]`}
+              >
+                {ADDRESS[0]}, {ADDRESS[1]}
+              </a>
+            </li>
+            <li>
+              <a href={PHONE_HREF} className={`${linkClass} tnum font-medium text-ink hover:text-cobalt`}>
                 {PHONE_DISPLAY}
               </a>
-            </p>
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
-              <a href={`mailto:${EMAIL}`} className="transition-colors hover:text-ink">
+            </li>
+            <li>
+              <a href={`mailto:${EMAIL}`} className={`${linkClass} break-all`}>
                 {EMAIL}
               </a>
-              <span>·</span>
-              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-ink">
+            </li>
+            <li>
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className={linkClass}>
                 WhatsApp
               </a>
-            </div>
-          </div>
+            </li>
+          </ul>
         </div>
       </div>
 
-      <div className="mt-14 flex flex-col gap-3 border-t border-line pt-6 text-[14px] text-stone sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-12 flex flex-col gap-2 border-t border-line pt-6 text-[14px] text-stone sm:flex-row sm:items-center sm:justify-between">
         <p>© 2026 The Lukla Himalayan &amp; South Indian Kitchen. All rights reserved.</p>
-        <a href="#main" className="inline-flex items-center gap-1.5 py-1 transition-colors hover:text-ink">
+        <a href="#main" className="inline-flex min-h-11 items-center gap-1.5 transition-colors hover:text-ink">
           Back to top
           <span aria-hidden>↑</span>
         </a>

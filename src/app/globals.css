@@ -143,6 +143,18 @@ body {
   }
 }
 
+/* A short fade and lift as each page arrives. */
+@keyframes page-in {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+}
+
+.page-enter {
+  animation: page-in 0.3s var(--ease-soft);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

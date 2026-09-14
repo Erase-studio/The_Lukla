@@ -12,7 +12,7 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT, MAPS_URL } from "@/lib/menu-data";
+import { MAPS_URL } from "@/lib/menu-data";
 import type { Plate } from "@/lib/local-photos";
 import { useMotionAmplitude } from "@/lib/use-motion-amplitude";
 import { IconArrowUpRight } from "./icons";
@@ -158,15 +158,7 @@ function FloatingPlate({
   );
 }
 
-export function Hero({
-  plates,
-  rating = GOOGLE_RATING,
-  userRatingCount = GOOGLE_REVIEW_COUNT,
-}: {
-  plates: Record<string, Plate>;
-  rating?: number;
-  userRatingCount?: number;
-}) {
+export function Hero({ plates }: { plates: Record<string, Plate> }) {
   const section = useRef<HTMLElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const still = Boolean(useReducedMotion());
@@ -260,24 +252,7 @@ export function Hero({
           style={{ y: textY }}
           className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center px-5 pt-10 text-center sm:px-6 sm:pt-16 lg:pt-[5svh]"
         >
-          {/* Origin Elevation Pill: connects the Himalayan mountain town with Niagara Falls */}
-          <motion.div
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: EASE }}
-            className="inline-flex items-center gap-2 rounded-full border border-cobalt/20 bg-paper/85 px-4 py-1.5 shadow-[0_2px_10px_rgba(21,34,61,0.06)] backdrop-blur-md"
-          >
-            <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-cobalt">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Lukla 2,860m
-            </span>
-            <span aria-hidden className="text-ink/30">·</span>
-            <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-ink/80">
-              Niagara Falls 175m
-            </span>
-          </motion.div>
-
-          <h1 className="mt-5 font-display text-[clamp(2.9rem,min(8.4vw,11.5svh),6.75rem)] leading-[0.94] tracking-[-0.025em] text-ink">
+          <h1 className="mt-2 font-display text-[clamp(2.9rem,min(8.4vw,11.5svh),6.75rem)] leading-[0.94] tracking-[-0.025em] text-ink">
             {HEADLINE.map((line, i) => (
               <span key={line} className="block overflow-hidden pb-[0.08em]">
                 <motion.span
@@ -396,33 +371,6 @@ export function Hero({
         </div>
         <div aria-hidden className="h-8 md:hidden" />
       </motion.div>
-
-      {/* Refined Quick Details Strip */}
-      <div className="mx-auto max-w-[1240px] px-3 sm:px-5 lg:px-10">
-        <dl className="mt-8 grid grid-cols-1 gap-6 border-b border-line pb-10 text-[16px] sm:grid-cols-3">
-          <div>
-            <dt className="eyebrow flex items-center gap-1.5">
-              <span>Google Verified</span>
-              <span className="inline-flex text-saffron">★★★★★</span>
-            </dt>
-            <dd className="tnum mt-2 font-medium text-ink">
-              {rating.toFixed(1)} rating · {userRatingCount.toLocaleString()} real reviews
-            </dd>
-          </div>
-          <div>
-            <dt className="eyebrow">Two Living Kitchens</dt>
-            <dd className="mt-2 text-ink">
-              Himalayan hearth &amp; South Indian griddle
-            </dd>
-          </div>
-          <div>
-            <dt className="eyebrow">Location</dt>
-            <dd className="mt-2 text-ink">
-              1 Prospect Pointe · 3 mins from the Falls
-            </dd>
-          </div>
-        </dl>
-      </div>
     </section>
   );
 }

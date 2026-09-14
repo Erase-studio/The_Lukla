@@ -119,7 +119,7 @@ export function SiteHeader() {
               >
                 The Lukla
               </span>
-              <span className="mt-1.5 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-cobalt">
+              <span className="mt-1.5 flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.14em] text-cobalt">
                 <span className="font-display text-[13px] font-medium normal-case tracking-normal">
                   लुक्ला
                 </span>
@@ -173,6 +173,14 @@ export function SiteHeader() {
             >
               <IconPhone className="h-4 w-4" />
               Call to order
+            </a>
+            {/* Phones: calling is one tap from the top of every page. */}
+            <a
+              href={PHONE_HREF}
+              aria-label={`Call to order, ${PHONE_DISPLAY}`}
+              className="grid h-12 w-12 place-items-center rounded-full bg-ink text-paper md:hidden"
+            >
+              <IconPhone className="h-5 w-5" />
             </a>
             <button
               type="button"

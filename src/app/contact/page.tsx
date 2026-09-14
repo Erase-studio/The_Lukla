@@ -105,7 +105,7 @@ export default function Contact() {
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="eyebrow block">{method.label}</span>
-                      <span className="tnum mt-1.5 block break-words font-display text-[clamp(1.35rem,2.2vw,1.7rem)] leading-tight text-ink">
+                      <span className="tnum mt-1.5 block break-words font-display text-[clamp(1.2rem,2.2vw,1.7rem)] leading-tight text-ink">
                         {method.value}
                       </span>
                       {method.note && (
@@ -120,7 +120,7 @@ export default function Contact() {
 
             <div className="mt-12">
               <h2 className="eyebrow">Opening hours</h2>
-              <HoursTiles tone="light" className="mt-5 grid-cols-2" />
+              <HoursTiles tone="light" className="mt-5 grid-cols-1 sm:grid-cols-2" />
               <p className="mt-5 text-[15px] leading-[1.6] text-stone">
                 Dine-in, takeout, curbside pickup and outdoor seating.
               </p>

@@ -1,23 +1,17 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 
 /**
- * Wraps each page in a fade+lift enter animation keyed on the pathname.
- * When the route changes React swaps the key, triggering a fresh enter.
- * No exit animation needed — the incoming page overlaps instantly.
+ * Replays a short fade and lift on each route change (keyed on the pathname).
+ * It's a CSS animation rather than a JS one, so the page is visible in the server HTML:
+ * phones on slow connections see content right away instead of waiting for JavaScript.
  */
 export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   return (
-    <motion.div
-      key={pathname}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <div key={pathname} className="page-enter">
       {children}
-    </motion.div>
+    </div>
   );
 }

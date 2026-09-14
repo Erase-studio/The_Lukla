@@ -139,7 +139,7 @@ export function MenuDiscovery({ plates }: { plates: Record<string, Plate> }) {
                           <Lines group={group} />
                           <Link
                             href={`/menu#${group.id}`}
-                            className="mt-5 inline-flex items-center gap-2 py-1.5 text-[15px] font-medium text-ink underline decoration-ink/25 underline-offset-4 hover:decoration-ink"
+                            className="mt-4 inline-flex min-h-11 items-center gap-2 text-[15px] font-medium text-ink underline decoration-ink/25 underline-offset-4 hover:decoration-ink"
                           >
                             All {group.title.toLowerCase()}
                             <IconArrowRight className="h-4 w-4" />

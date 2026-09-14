@@ -66,14 +66,14 @@ export function Visit() {
                 <h3 className="eyebrow text-paper/65">Opening hours</h3>
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-1.5 text-[14px] text-paper/75 transition-colors hover:text-paper"
+                  className="inline-flex min-h-11 items-center gap-1.5 text-[14px] text-paper/75 transition-colors hover:text-paper"
                 >
                   View full details
                   <IconArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
 
-              <HoursTiles tone="dark" className="mt-4 grid-cols-2" />
+              <HoursTiles tone="dark" className="mt-4 grid-cols-1 sm:grid-cols-2" />
 
               <p className="mt-6 text-[14px] text-paper/65">
                 Dine-in, takeout, curbside pickup &amp; outdoor seating · Halal options available

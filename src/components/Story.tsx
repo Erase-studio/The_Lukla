@@ -5,7 +5,6 @@ import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { images } from "@/lib/images";
 import { BRAND_LINE, CUISINES } from "@/lib/menu-data";
-import { ElevationProfile } from "./ElevationProfile";
 import { Reveal } from "./Reveal";
 
 export function Story() {
@@ -24,9 +23,9 @@ export function Story() {
   return (
     <section ref={section} id="story" aria-labelledby="story-heading" className="section-y overflow-hidden">
       <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-12 px-6 md:grid-cols-12 md:gap-10 lg:gap-16 lg:px-10">
-        {/* The arch stays in view with internal parallax while the story beside it scrolls. */}
+        {/* The photo stays in view with internal parallax while the story beside it scrolls. */}
         <div className="md:col-span-5">
-          <div className="relative mx-auto aspect-[4/3] w-full max-w-[460px] overflow-hidden rounded-t-full bg-wash shadow-[0_24px_48px_-20px_rgba(21,34,61,0.22)] md:sticky md:top-28 md:aspect-[4/5]">
+          <div className="relative mx-auto aspect-[4/3] w-full max-w-[460px] overflow-hidden rounded-[28px] bg-wash shadow-[0_24px_48px_-20px_rgba(21,34,61,0.22)] md:sticky md:top-28 md:aspect-[4/5]">
             <motion.div
               style={{ y: imageY, scale: imageScale }}
               className="absolute -inset-y-[18%] inset-x-0 h-[136%] w-full"
@@ -72,9 +71,7 @@ export function Story() {
           </div>
           <p className="mt-6 text-[15px] text-stone">Vegan and Jain plates on request.</p>
 
-          <ElevationProfile />
-
-          <p className="max-w-lg font-display text-[clamp(1.75rem,2.8vw,2.25rem)] leading-[1.15] text-ink">
+          <p className="mt-10 max-w-lg font-display text-[clamp(1.75rem,2.8vw,2.25rem)] leading-[1.15] text-ink">
             {BRAND_LINE}
           </p>
         </div>

@@ -30,13 +30,14 @@ export function OpenStatus({ tone, className = "" }: { tone: Tone; className?: s
   );
 }
 
-// One tile per run of days with the same hours; today's tile is lifted out.
+// One entry per run of days with the same hours; today's is lifted out.
+// Phones get full-width rows (days left, time right) so nothing wraps; wider screens get tiles.
 export function HoursTiles({ tone, className = "" }: { tone: Tone; className?: string }) {
   const status = useOpeningStatus();
   const dark = tone === "dark";
 
   return (
-    <dl className={`grid gap-3 ${className}`}>
+    <dl className={`grid gap-2.5 sm:gap-3 ${className}`}>
       {HOURS.map((row) => {
         const today = status !== null && row.days.includes(status.today);
         const tile = today
@@ -57,20 +58,22 @@ export function HoursTiles({ tone, className = "" }: { tone: Tone; className?: s
         return (
           <div
             key={row.label}
-            className={`rounded-2xl px-5 py-4 transition-colors duration-500 ${tile}`}
+            className={`flex items-center justify-between gap-3 rounded-2xl px-4 py-3.5 transition-colors duration-500 sm:block sm:px-5 sm:py-4 ${tile}`}
           >
-            <dt className={`flex items-center justify-between gap-2 text-[14px] ${label}`}>
+            <dt className={`flex items-center gap-2 text-[14px] sm:justify-between ${label}`}>
               <span>
                 <span className="sr-only">{row.label}</span>
                 <span aria-hidden>{row.short}</span>
               </span>
               {today && (
-                <span className="rounded-full bg-cobalt px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-paper">
+                <span className="rounded-full bg-cobalt px-2 py-0.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-paper">
                   Today
                 </span>
               )}
             </dt>
-            <dd className="tnum mt-1.5 text-[16px] font-medium">{row.time}</dd>
+            <dd className="tnum shrink-0 text-[15px] font-medium sm:mt-1.5 sm:text-[16px]">
+              {row.time}
+            </dd>
           </div>
         );
       })}
