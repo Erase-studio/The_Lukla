@@ -2,6 +2,7 @@
 
 import { useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { IconChevronLeft, IconChevronRight, IconX } from "./icons";
 
 export type GalleryItem = {
@@ -13,16 +14,73 @@ export type GalleryItem = {
   span: string;
 };
 
+function GalleryTile({
+  item,
+  index,
+  onShow,
+  progress,
+  still,
+}: {
+  item: GalleryItem;
+  index: number;
+  onShow: (i: number) => void;
+  progress: ReturnType<typeof useSpring>;
+  still: boolean;
+}) {
+  // Alternating differential parallax across masonry grid columns
+  const driftY = (index % 3 - 1) * 18;
+  const tileY = useTransform(progress, [0, 1], still ? [0, 0] : [driftY, -driftY]);
+
+  return (
+    <motion.li style={{ y: tileY }} className={item.span}>
+      <button
+        type="button"
+        onClick={() => onShow(index)}
+        aria-label={`Open photo: ${item.caption}`}
+        className="group relative block h-full w-full overflow-hidden rounded-[24px] bg-wash shadow-[0_16px_36px_-20px_rgba(21,34,61,0.18)]"
+      >
+        {item.kind === "plate" && (
+          <span
+            aria-hidden
+            className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_45%,rgba(255,255,255,0.85),transparent_72%)]"
+          />
+        )}
+        <Image
+          src={item.src}
+          alt={item.alt}
+          fill
+          sizes="(min-width:768px) 40vw, 90vw"
+          className={`transition-transform duration-[900ms] ease-soft ${
+            item.kind === "plate"
+              ? "object-contain p-[12%] drop-shadow-[0_22px_26px_rgba(21,34,61,0.26)] group-hover:rotate-6 group-hover:scale-[1.05]"
+              : "object-cover group-hover:scale-[1.05]"
+          }`}
+        />
+        <span className="absolute bottom-3 left-3 rounded-full bg-paper/90 px-3 py-1.5 text-[13px] font-medium text-ink backdrop-blur">
+          {item.caption}
+        </span>
+      </button>
+    </motion.li>
+  );
+}
+
 export function GalleryGrid({ items }: { items: GalleryItem[] }) {
+  const section = useRef<HTMLElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
+  const still = Boolean(useReducedMotion());
   const [index, setIndex] = useState(0);
-  const [open, setOpen] = useState(false);
   const count = items.length;
   const current = items[index];
 
+  const { scrollYProgress } = useScroll({
+    target: section,
+    offset: ["start end", "end start"],
+  });
+
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 24, mass: 0.3 });
+
   const show = (i: number) => {
     setIndex(i);
-    setOpen(true);
     dialog.current?.showModal();
   };
   const close = () => dialog.current?.close();
@@ -34,39 +92,18 @@ export function GalleryGrid({ items }: { items: GalleryItem[] }) {
   };
 
   return (
-    <section aria-label="Photos" className="section-y">
+    <section ref={section} aria-label="Photos" className="section-y overflow-hidden">
       <div className="mx-auto max-w-[1240px] px-6 lg:px-10">
         <ul className="grid auto-rows-[clamp(150px,19vw,250px)] grid-flow-dense grid-cols-2 gap-3 md:grid-cols-6 md:gap-4">
           {items.map((item, i) => (
-            <li key={item.src} className={item.span}>
-              <button
-                type="button"
-                onClick={() => show(i)}
-                aria-label={`Open photo: ${item.caption}`}
-                className="group relative block h-full w-full overflow-hidden rounded-[24px] bg-wash"
-              >
-                {item.kind === "plate" && (
-                  <span
-                    aria-hidden
-                    className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_45%,rgba(255,255,255,0.85),transparent_72%)]"
-                  />
-                )}
-                <Image
-                  src={item.src}
-                  alt={item.alt}
-                  fill
-                  sizes="(min-width:768px) 40vw, 90vw"
-                  className={`transition-transform duration-[900ms] ease-soft ${
-                    item.kind === "plate"
-                      ? "object-contain p-[12%] drop-shadow-[0_22px_26px_rgba(21,34,61,0.26)] group-hover:rotate-6 group-hover:scale-[1.04]"
-                      : "object-cover group-hover:scale-[1.04]"
-                  }`}
-                />
-                <span className="absolute bottom-3 left-3 rounded-full bg-paper/90 px-3 py-1.5 text-[13px] font-medium text-ink backdrop-blur">
-                  {item.caption}
-                </span>
-              </button>
-            </li>
+            <GalleryTile
+              key={item.src}
+              item={item}
+              index={i}
+              onShow={show}
+              progress={progress}
+              still={still}
+            />
           ))}
         </ul>
       </div>
@@ -75,63 +112,67 @@ export function GalleryGrid({ items }: { items: GalleryItem[] }) {
       <dialog
         ref={dialog}
         aria-label="Photo viewer"
-        onClose={() => setOpen(false)}
         onKeyDown={onKeyDown}
         onClick={(e) => e.target === e.currentTarget && close()}
-        className="m-0 h-dvh max-h-none w-screen max-w-none bg-transparent p-0 text-paper backdrop:bg-ink/90 backdrop:backdrop-blur-sm open:flex open:flex-col"
+        className="backdrop:bg-ink/80 backdrop:backdrop-blur-sm fixed inset-0 m-auto max-h-[92svh] max-w-[92vw] overflow-hidden rounded-[32px] bg-paper p-0 text-ink shadow-[0_40px_80px_rgba(21,34,61,0.6)]"
       >
-        {open && (
-          <>
-            <div className="flex items-center justify-between px-5 py-4 sm:px-8">
-              <p className="tnum text-[14px] text-paper/70">
-                {index + 1} / {count}
-              </p>
+        {current && (
+          <div className="flex flex-col">
+            <div className="relative aspect-[4/3] w-full max-w-[960px] bg-wash sm:aspect-[16/10]">
+              {current.kind === "plate" && (
+                <span
+                  aria-hidden
+                  className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_45%,rgba(255,255,255,0.85),transparent_72%)]"
+                />
+              )}
+              <Image
+                src={current.src}
+                alt={current.alt}
+                fill
+                sizes="(min-width:1024px) 960px, 90vw"
+                className={
+                  current.kind === "plate"
+                    ? "object-contain p-[10%] drop-shadow-[0_30px_36px_rgba(21,34,61,0.32)]"
+                    : "object-cover"
+                }
+              />
               <button
                 type="button"
                 onClick={close}
-                aria-label="Close photo viewer"
-                className="grid h-12 w-12 place-items-center rounded-full border border-paper/25 transition-colors hover:border-paper"
+                aria-label="Close photo"
+                className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-paper/90 text-ink backdrop-blur transition hover:bg-paper"
               >
                 <IconX className="h-5 w-5" />
               </button>
             </div>
 
-            <div
-              className="relative min-h-0 flex-1"
-              onClick={(e) => e.target === e.currentTarget && close()}
-            >
-              <Image
-                key={current.src}
-                src={current.src}
-                alt={current.alt}
-                fill
-                sizes="100vw"
-                className={current.kind === "plate" ? "object-contain p-[8%]" : "object-contain p-4 sm:p-8"}
-              />
+            <div className="flex items-center justify-between gap-4 border-t border-line px-6 py-4">
+              <div>
+                <p className="font-display text-[1.4rem] leading-tight text-ink">{current.caption}</p>
+                <p className="tnum mt-0.5 text-[14px] text-stone">
+                  {index + 1} of {count}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => step(-1)}
+                  aria-label="Previous photo"
+                  className="grid h-11 w-11 place-items-center rounded-full border border-ink/20 transition-colors hover:border-ink"
+                >
+                  <IconChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => step(1)}
+                  aria-label="Next photo"
+                  className="grid h-11 w-11 place-items-center rounded-full border border-ink/20 transition-colors hover:border-ink"
+                >
+                  <IconChevronRight className="h-5 w-5" />
+                </button>
+              </div>
             </div>
-
-            <div className="flex items-center justify-between gap-4 px-5 pb-6 pt-4 sm:px-8">
-              <button
-                type="button"
-                onClick={() => step(-1)}
-                aria-label="Previous photo"
-                className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-paper/25 transition-colors hover:border-paper"
-              >
-                <IconChevronLeft className="h-5 w-5" />
-              </button>
-              <p className="text-center text-[16px]" aria-live="polite">
-                {current.caption}
-              </p>
-              <button
-                type="button"
-                onClick={() => step(1)}
-                aria-label="Next photo"
-                className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-paper/25 transition-colors hover:border-paper"
-              >
-                <IconChevronRight className="h-5 w-5" />
-              </button>
-            </div>
-          </>
+          </div>
         )}
       </dialog>
     </section>

@@ -28,28 +28,28 @@ const SLOTS: { name: string; box: string; drift: Drift; alt: string; delay: numb
   {
     name: "momo",
     box: "left-[-3%] top-[7%] w-[17%] lg:w-[14%]",
-    drift: { rotate: -65, x: -30, y: -50 },
+    drift: { rotate: -125, x: -55, y: -85 },
     alt: "Momos with tomato achar",
     delay: 0.8,
   },
   {
     name: "dosa",
     box: "right-[-3%] top-[5%] w-[18%] lg:w-[15%]",
-    drift: { rotate: 75, x: 26, y: -36 },
+    drift: { rotate: 135, x: 50, y: -70 },
     alt: "Masala dosa with sambar and coconut chutney",
     delay: 0.9,
   },
   {
     name: "biryani",
     box: "bottom-[-7%] left-[4%] w-[19%] lg:w-[16%]",
-    drift: { rotate: 85, x: -22, y: 48 },
+    drift: { rotate: 145, x: -45, y: 80 },
     alt: "Biryani in a clay bowl",
     delay: 1,
   },
   {
     name: "chai",
     box: "bottom-[9%] right-[6%] w-[12%] lg:w-[9.5%]",
-    drift: { rotate: -50, x: 16, y: 22 },
+    drift: { rotate: -115, x: 38, y: 55 },
     alt: "A cup of tea on a saucer",
     delay: 1.1,
   },
@@ -116,11 +116,18 @@ export function Hero({
   // Fluid, responsive spring: low mass and tuned damping track the wheel/touch smoothly with zero sluggish drag.
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 24, mass: 0.3 });
 
-  // The thali turns gracefully with scroll, giving a tactile, satisfying rotation.
-  const thaliRotate = useTransform([progress, amplitude], ([p, a]: number[]) => p * a * 75);
-  const thaliScale = useTransform([progress, amplitude], ([p, a]: number[]) => 1 + p * a * 0.08);
-  const thaliY = useTransform([progress, amplitude], ([p, a]: number[]) => `${p * a * 12}%`);
-  const ridgeY = useTransform([progress, amplitude], ([p, a]: number[]) => `${p * a * 14}%`);
+  // The thali turns boldly with scroll, giving a tactile, satisfying rotation.
+  const thaliRotate = useTransform([progress, amplitude], ([p, a]: number[]) => p * a * 135);
+  const thaliScale = useTransform([progress, amplitude], ([p, a]: number[]) => 1 + p * a * 0.12);
+  const thaliY = useTransform([progress, amplitude], ([p, a]: number[]) => p * a * 45);
+
+  // The mountains have a deep, unmistakable vertical drift & scale parallax
+  const ridgeY = useTransform([progress, amplitude], ([p, a]: number[]) => p * a * 160);
+  const ridgeScale = useTransform([progress, amplitude], ([p, a]: number[]) => 1 + p * a * 0.08);
+  const ridgeYMobile = useTransform([progress, amplitude], ([p, a]: number[]) => p * a * 65);
+
+  // Foreground text lifts slightly, amplifying the multi-plane 3D depth
+  const textY = useTransform([progress, amplitude], ([p, a]: number[]) => p * a * -35);
 
   return (
     <section ref={section} id="top" className="px-3 pt-[120px] sm:px-5 lg:pt-[140px]">
@@ -130,17 +137,18 @@ export function Hero({
         {/* A 3D render of the real Khumbu terrain from above Tengboche (AWS Terrain Tiles elevation data):
             Nuptse, Everest and Lhotse left of centre, Ama Dablam to the right. The sky is transparent. */}
         <motion.div
-          style={{ y: ridgeY }}
-          className="pointer-events-none absolute bottom-0 left-1/2 -z-10 hidden w-[140%] -translate-x-1/2 md:block lg:w-full"
+          style={{ y: ridgeY, scale: ridgeScale }}
+          className="pointer-events-none absolute bottom-[-40px] left-1/2 -z-10 hidden w-[140%] origin-bottom -translate-x-1/2 md:block lg:bottom-[-60px] lg:w-full"
         >
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.8, delay: 0.15, ease: EASE }}
+            className="relative w-full [mask-image:linear-gradient(to_bottom,#000_75%,transparent)]"
           >
             <Image
               src="/himalaya-range.webp"
-              alt=""
+              alt="Himalayan mountain ridge with Everest, Nuptse, Lhotse and Ama Dablam"
               width={2400}
               height={588}
               loading="eager"
@@ -150,7 +158,10 @@ export function Hero({
           </motion.div>
         </motion.div>
 
-        <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center px-5 pt-10 text-center sm:px-6 sm:pt-16 lg:pt-[5svh]">
+        <motion.div
+          style={{ y: textY }}
+          className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center px-5 pt-10 text-center sm:px-6 sm:pt-16 lg:pt-[5svh]"
+        >
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -175,19 +186,22 @@ export function Hero({
             ))}
           </h1>
 
-          {/* Phones get their own composition: the plate right under the headline, set on the ridge. */}
+          {/* Phones get their own composition: the plate right under the headline, set on the ridge with parallax. */}
           <div className="relative mt-3 aspect-[5/4] w-full max-w-[380px] md:hidden">
-            <div className="pointer-events-none absolute bottom-[6%] left-1/2 w-[250%] -translate-x-1/2 [mask-image:linear-gradient(to_bottom,#000_60%,transparent)]">
+            <motion.div
+              style={{ y: ridgeYMobile, scale: ridgeScale }}
+              className="pointer-events-none absolute bottom-[6%] left-1/2 w-[250%] origin-bottom -translate-x-1/2 [mask-image:linear-gradient(to_bottom,#000_65%,transparent)]"
+            >
               <Image
                 src="/himalaya-range.webp"
-                alt=""
+                alt="Himalayan mountain ridge"
                 width={2400}
                 height={588}
                 loading="eager"
                 sizes="250vw"
                 className="h-auto w-full"
               />
-            </div>
+            </motion.div>
             <motion.div
               style={{ rotate: thaliRotate, scale: thaliScale }}
               className="absolute left-1/2 top-[4%] aspect-square w-[72%] -translate-x-1/2"
@@ -235,7 +249,7 @@ export function Hero({
               </a>
             </div>
           </motion.div>
-        </div>
+        </motion.div>
 
         {SLOTS.map((slot) => {
           const plate = plates[slot.name];
