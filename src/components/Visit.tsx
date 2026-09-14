@@ -1,12 +1,9 @@
 import Link from "next/link";
 import {
   ADDRESS,
-  EMAIL,
-  FULL_MENU_URL,
   MAPS_URL,
   PHONE_DISPLAY,
   PHONE_HREF,
-  WHATSAPP_URL,
 } from "@/lib/menu-data";
 import { IconArrowRight, IconArrowUpRight, IconPhone } from "./icons";
 import { HoursTiles, OpenStatus } from "./OpeningHours";
@@ -30,102 +27,58 @@ export function Visit() {
             <OpenStatus tone="dark" className="self-start md:self-auto" />
           </Reveal>
 
-          <div className="mt-12 grid grid-cols-1 border-y border-paper/10 md:grid-cols-3">
-            <div className="py-8 md:border-r md:border-paper/10 md:pr-8">
-              <h3 className="eyebrow text-paper/65">Address</h3>
-              <p className="mt-4 text-[18px] leading-[1.55]">
+          <div className="mt-12 grid grid-cols-1 gap-12 border-t border-paper/10 pt-12 md:grid-cols-2 md:gap-16">
+            {/* Location & Ordering */}
+            <div>
+              <h3 className="eyebrow text-paper/65">Find us</h3>
+              <p className="mt-4 text-[20px] font-medium leading-[1.45] text-paper">
                 {ADDRESS[0]}
                 <br />
                 {ADDRESS[1]}
               </p>
               <p className="mt-2 text-[15px] text-paper/70">
-                Inside Comfort Inn The Pointe. Free parking.
+                Inside Comfort Inn The Pointe · Free parking on site
               </p>
-              <a
-                href={MAPS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn mt-6 bg-paper text-ink hover:bg-wall"
-              >
-                Get directions
-                <IconArrowUpRight className="h-4 w-4" />
-              </a>
-            </div>
 
-            <div className="border-t border-paper/10 py-8 md:border-r md:border-t-0 md:px-8">
-              <h3 className="eyebrow text-paper/65">Order</h3>
-              <a
-                href={PHONE_HREF}
-                className="tnum mt-4 inline-block font-display text-[1.9rem] leading-none transition-colors hover:text-wall"
-              >
-                {PHONE_DISPLAY}
-              </a>
-              <p className="mt-3 text-[15px] text-paper/70">
-                Call ahead for a table, takeout or curbside pickup.
-              </p>
-              <a
-                href={PHONE_HREF}
-                className="btn mt-6 gap-2.5 border border-paper/25 hover:border-paper"
-              >
-                <IconPhone className="h-4 w-4" />
-                Call to order
-              </a>
-            </div>
-
-            <div className="border-t border-paper/10 py-8 md:border-t-0 md:pl-8">
-              <h3 className="eyebrow text-paper/65">Menu</h3>
-              <p className="mt-4 text-[18px] leading-[1.55]">
-                Momos, dosa, biryani, tandoor and more.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link href="/menu" className="btn border border-paper/25 hover:border-paper">
-                  See the menu
-                </Link>
+              <div className="mt-6 flex flex-wrap items-center gap-3">
                 <a
-                  href={FULL_MENU_URL}
+                  href={MAPS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn border border-paper/25 hover:border-paper"
+                  className="btn bg-paper text-ink hover:bg-wall"
                 >
-                  Full menu
+                  Get directions
                   <IconArrowUpRight className="h-4 w-4" />
                 </a>
+                <a
+                  href={PHONE_HREF}
+                  className="btn gap-2.5 border border-paper/25 hover:border-paper"
+                >
+                  <IconPhone className="h-4 w-4" />
+                  {PHONE_DISPLAY}
+                </a>
               </div>
-              <p className="mt-5 text-[15px] text-paper/70">
-                <a
-                  href={`mailto:${EMAIL}`}
-                  className="underline decoration-paper/30 underline-offset-4 transition-colors hover:text-paper hover:decoration-paper"
+            </div>
+
+            {/* Hours & Service */}
+            <div>
+              <div className="flex items-baseline justify-between gap-4">
+                <h3 className="eyebrow text-paper/65">Opening hours</h3>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center gap-1.5 text-[14px] text-paper/75 transition-colors hover:text-paper"
                 >
-                  {EMAIL}
-                </a>
-                {" · "}
-                <a
-                  href={WHATSAPP_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline decoration-paper/30 underline-offset-4 transition-colors hover:text-paper hover:decoration-paper"
-                >
-                  WhatsApp
-                </a>
+                  View full details
+                  <IconArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+
+              <HoursTiles tone="dark" className="mt-4 grid-cols-2" />
+
+              <p className="mt-6 text-[14px] text-paper/65">
+                Dine-in, takeout, curbside pickup &amp; outdoor seating · Halal options available
               </p>
             </div>
-          </div>
-
-          <div className="pt-10">
-            <div className="flex items-baseline justify-between gap-4">
-              <h3 className="eyebrow text-paper/65">Opening hours</h3>
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 py-1.5 text-[15px] text-paper/80 underline decoration-paper/30 underline-offset-4 transition-colors hover:text-paper hover:decoration-paper"
-              >
-                Map and FAQs
-                <IconArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-            <HoursTiles tone="dark" className="mt-5 grid-cols-2 md:grid-cols-4" />
-            <p className="mt-8 text-[15px] text-paper/65">
-              Dine-in, takeout, curbside pickup and outdoor seating. Halal options available.
-            </p>
           </div>
         </div>
       </div>

@@ -9,8 +9,8 @@ import {
   useTransform,
 } from "framer-motion";
 import { images } from "@/lib/images";
-import { MAPS_URL, PHONE_HREF } from "@/lib/menu-data";
-import { IconArrowUpRight, IconPhone } from "./icons";
+import { MAPS_URL } from "@/lib/menu-data";
+import { IconArrowUpRight } from "./icons";
 import { Reveal } from "./Reveal";
 
 export function FallsBand() {
@@ -65,15 +65,7 @@ export function FallsBand() {
             Spend the afternoon by the water, then come up the road for momos
             and a cup of chai.
           </p>
-          <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[15px] text-ink/75">
-            {["Free parking on site", "Takeout and curbside pickup"].map((item) => (
-              <li key={item} className="flex items-center gap-2">
-                <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-cobalt" />
-                {item}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8">
             <a
               href={MAPS_URL}
               target="_blank"
@@ -82,10 +74,6 @@ export function FallsBand() {
             >
               Get directions
               <IconArrowUpRight className="h-4 w-4" />
-            </a>
-            <a href={PHONE_HREF} className="btn btn-line gap-2.5">
-              <IconPhone className="h-4 w-4" />
-              Call to order
             </a>
           </div>
         </Reveal>

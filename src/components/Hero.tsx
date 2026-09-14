@@ -28,28 +28,28 @@ const SLOTS: { name: string; box: string; drift: Drift; alt: string; delay: numb
   {
     name: "momo",
     box: "left-[-3%] top-[7%] w-[17%] lg:w-[14%]",
-    drift: { rotate: -22, x: -26, y: -54 },
+    drift: { rotate: -65, x: -30, y: -50 },
     alt: "Momos with tomato achar",
     delay: 0.8,
   },
   {
     name: "dosa",
     box: "right-[-3%] top-[5%] w-[18%] lg:w-[15%]",
-    drift: { rotate: 30, x: 22, y: -34 },
+    drift: { rotate: 75, x: 26, y: -36 },
     alt: "Masala dosa with sambar and coconut chutney",
     delay: 0.9,
   },
   {
     name: "biryani",
     box: "bottom-[-7%] left-[4%] w-[19%] lg:w-[16%]",
-    drift: { rotate: 56, x: 20, y: 46 },
+    drift: { rotate: 85, x: -22, y: 48 },
     alt: "Biryani in a clay bowl",
     delay: 1,
   },
   {
     name: "chai",
     box: "bottom-[9%] right-[6%] w-[12%] lg:w-[9.5%]",
-    drift: { rotate: -10, x: 6, y: 14 },
+    drift: { rotate: -50, x: 16, y: 22 },
     alt: "A cup of tea on a saucer",
     delay: 1.1,
   },
@@ -113,13 +113,13 @@ export function Hero({
     target: section,
     offset: ["start start", "end start"],
   });
-  // A little inertia: layers ease toward the scroll position instead of snapping to it.
-  const progress = useSpring(scrollYProgress, { stiffness: 80, damping: 22, mass: 0.7 });
+  // Fluid, responsive spring: low mass and tuned damping track the wheel/touch smoothly with zero sluggish drag.
+  const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 24, mass: 0.3 });
 
-  // The thali is the anchor, so it barely moves: a slow turn and a slight lift toward the viewer.
-  const thaliRotate = useTransform([progress, amplitude], ([p, a]: number[]) => p * a * 16);
-  const thaliScale = useTransform([progress, amplitude], ([p, a]: number[]) => 1 + p * a * 0.06);
-  const thaliY = useTransform([progress, amplitude], ([p, a]: number[]) => `${p * a * 10}%`);
+  // The thali turns gracefully with scroll, giving a tactile, satisfying rotation.
+  const thaliRotate = useTransform([progress, amplitude], ([p, a]: number[]) => p * a * 75);
+  const thaliScale = useTransform([progress, amplitude], ([p, a]: number[]) => 1 + p * a * 0.08);
+  const thaliY = useTransform([progress, amplitude], ([p, a]: number[]) => `${p * a * 12}%`);
   const ridgeY = useTransform([progress, amplitude], ([p, a]: number[]) => `${p * a * 14}%`);
 
   return (
@@ -216,15 +216,9 @@ export function Hero({
             transition={{ duration: 1, delay: 0.45, ease: EASE }}
             className="flex w-full flex-col items-center"
           >
-            <p className="mt-5 hidden max-w-md text-[18px] leading-[1.55] text-stone md:block">
-              Momos, thukpa, dosa and biryani, made to order three minutes from
-              Niagara Falls.
-            </p>
-            <p className="text-[15px] font-semibold uppercase tracking-[0.14em] text-ink md:hidden">
-              Momo · Thukpa · Dosa · Biryani
-            </p>
-            <p className="mt-2 text-[16px] text-stone md:hidden">
-              Made to order, three minutes from the Falls.
+            <p className="mt-5 max-w-md text-center text-[16px] leading-[1.6] text-stone sm:text-[18px]">
+              Momos and thukpa from Nepal, dosa and biryani from South India.
+              Cooked to order, three minutes from the Falls.
             </p>
             <div className="mt-7 flex w-full max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center md:mt-8">
               <Link href="/menu" className="btn btn-solid justify-center">

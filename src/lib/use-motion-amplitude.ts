@@ -10,7 +10,7 @@ export function useMotionAmplitude(still: boolean) {
     const tablet = window.matchMedia("(max-width: 1023px)");
     const phone = window.matchMedia("(max-width: 767px)");
     const update = () =>
-      amplitude.set(still ? 0 : phone.matches ? 0.3 : tablet.matches ? 0.6 : 1);
+      amplitude.set(still ? 0 : phone.matches ? 0.65 : tablet.matches ? 0.85 : 1);
     update();
     tablet.addEventListener("change", update);
     phone.addEventListener("change", update);
